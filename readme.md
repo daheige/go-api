@@ -4,7 +4,7 @@
     .
     ├── app
     │   ├── controller  控制器
-    │   ├── logic       业务逻辑层gi
+    │   ├── logic       业务逻辑层
     │   ├── middleware  中间件层
     │   └── routes      路由层设置
     ├── app.yaml        配置文件
