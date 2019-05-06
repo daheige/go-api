@@ -16,6 +16,7 @@ import (
 
 	"github.com/daheige/thinkgo/common"
 	"github.com/gin-gonic/gin"
+	"go-api/app/routes"
 )
 
 var port int
@@ -70,17 +71,8 @@ func init() {
 func main() {
 	router := gin.New()
 
-	//设置路由
-	router.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"code":    0,
-			"message": "ok",
-		})
-	})
-
-	router.GET("/check", func(ctx *gin.Context) {
-		ctx.String(200, `{"alive": true}`)
-	})
+	//加载路由文件中的路由
+	routes.WebRoute(router)
 
 	//服务server设置
 	server := &http.Server{
