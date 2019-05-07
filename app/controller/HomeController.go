@@ -20,6 +20,8 @@ func (ctrl *HomeController) Index(ctx *gin.Context) {
 }
 
 func (ctrl *HomeController) Test(ctx *gin.Context) {
+	panic(11)
+
 	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
 		"code":    0,
 		"message": "ok",
