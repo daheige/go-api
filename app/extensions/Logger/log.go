@@ -4,7 +4,6 @@ import (
 	"go-api/app/helper"
 	"runtime"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -25,7 +24,6 @@ import (
         "current_line": 44,
         "host": "[::1]:56752",
         "ip": "::1",
-        "local_time": "2019-05-07 22:21:56.941",
         "log_id": "a85367902fd194f35338ca640dc9509c",
         "method": "GET",
         "options":
@@ -39,7 +37,6 @@ import (
     }
 }
 */
-const logTmFmtWithMS = "2006-01-02 15:04:05.999"
 
 func writeLog(ctx *gin.Context, levelName string, message interface{}, context map[string]interface{}) {
 	tag := strings.Replace(ctx.Request.RequestURI, "/", "_", -1)
@@ -53,7 +50,6 @@ func writeLog(ctx *gin.Context, levelName string, message interface{}, context m
 		"tag":          tag,
 		"request_uri":  ctx.Request.RequestURI,
 		"log_id":       ctx.GetString("log_id"),
-		"local_time":   time.Now().Format(logTmFmtWithMS),
 		"options":      context,
 		"host":         ctx.Request.RemoteAddr,
 		"ip":           ctx.ClientIP(),
