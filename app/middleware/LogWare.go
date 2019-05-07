@@ -21,7 +21,7 @@ func (ware *LogWare) Access() gin.HandlerFunc {
 		log.Println("request uri: ", uri)
 
 		//如果采用了nginx x-request-id功能，可以获得x-request-id
-		logId := ctx.GetString("X-Request-Id")
+		logId := ctx.GetHeader("X-Request-Id")
 		if logId == "" {
 			logId = common.RndUuidMd5() //日志id
 		}
