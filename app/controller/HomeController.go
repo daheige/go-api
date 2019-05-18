@@ -65,6 +65,9 @@ func (ctrl *HomeController) SetData(ctx *gin.Context) {
 		return
 	}
 
+	//用完就需要释放连接，防止过多的连接导致redis连接过多而陷入长久等待，从而redis崩溃
+	defer redisObj.Close()
+
 	_, err = redisObj.Do("set", "myname", "daheige")
 	if err != nil {
 		ctx.JSON(200, gin.H{

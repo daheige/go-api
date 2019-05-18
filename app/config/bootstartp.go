@@ -39,6 +39,8 @@ func InitRedis() {
 }
 
 //从连接池中获取redis client
+//用完就需要调用redisObj.Close()释放连接，防止过多的连接导致redis连接过多
+// 导致当前请求而陷入长久等待，从而redis崩溃
 func GetRedisObj(name string) (redis.Conn, error) {
 	conn := redisCache.GetRedisClient(name)
 	if conn == nil {
