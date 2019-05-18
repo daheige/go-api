@@ -14,9 +14,10 @@ import (
 
 	"go-api/config"
 
+	"go-api/app/routes"
+
 	"github.com/daheige/thinkgo/common"
 	"github.com/gin-gonic/gin"
-	"go-api/app/routes"
 )
 
 var port int
@@ -52,6 +53,7 @@ func init() {
 		httpMux.HandleFunc("/debug/pprof/profile", pprof.Profile)
 		httpMux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
 		httpMux.HandleFunc("/debug/pprof/trace", pprof.Trace)
+		httpMux.HandleFunc("/check", HealthCheckHandler)
 		if err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", pprof_port), httpMux); err != nil {
 			log.Println(err)
 		}
@@ -118,4 +120,14 @@ func main() {
 
 	log.Println("shutting down")
 	os.Exit(0)
+}
+
+func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	// A very simple health check.
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+
+	// In the future we could report back on the status of our DB, or our cache
+	// (e.g. Redis) by performing a simple PING, and include them in the response.
+	w.Write([]byte(`{"alive": true}`))
 }
