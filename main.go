@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"go-api/app/config"
 	"log"
 	"net/http"
 	"net/http/pprof"
@@ -11,8 +12,6 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-
-	"go-api/config"
 
 	"go-api/app/routes"
 

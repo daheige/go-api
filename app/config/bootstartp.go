@@ -10,11 +10,23 @@ import (
 )
 
 var AppEnv string
+var AppDebug bool
 var conf *yamlConf.ConfigEngine
 
 func InitConf(path string) {
 	conf = yamlConf.NewConf()
-	conf.LoadConf(path + "/app.yaml")
+	err := conf.LoadConf(path + "/app.yaml")
+	if err != nil {
+		panic(err)
+	}
+
+	AppEnv = conf.GetString("AppEnv", "production")
+	switch AppEnv {
+	case "local", "testing", "staging":
+		AppDebug = true
+	default:
+		AppDebug = false
+	}
 }
 
 func InitRedis() {

@@ -10,7 +10,7 @@ import (
 func WebRoute(router *gin.Engine) {
 	//访问日志中间件处理
 	logWare := &middleware.LogWare{}
-	router.Use(logWare.Access(),logWare.Recover())
+	router.Use(logWare.Access(), logWare.Recover())
 
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{
@@ -33,4 +33,6 @@ func WebRoute(router *gin.Engine) {
 
 	//http://localhost:1338/v1/data?id=456
 	v1.GET("/data", homeCtrl.GetData)
+
+	v1.GET("/set-data", homeCtrl.SetData)
 }

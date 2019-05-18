@@ -2,6 +2,9 @@ package controller
 
 import (
 	"go-api/app/logic"
+	"log"
+
+	"go-api/app/config"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +18,6 @@ func (ctrl *HomeController) Index(ctx *gin.Context) {
 	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
 		"code":    200,
 		"message": "ok",
-		"data":    EmptyArray{},
 	})
 }
 
@@ -48,5 +50,33 @@ func (ctrl *HomeController) GetData(ctx *gin.Context) {
 		"code":    0,
 		"message": "ok",
 		"data":    data,
+	})
+}
+
+func (ctrl *HomeController) SetData(ctx *gin.Context) {
+	redisObj, err := config.GetRedisObj("default")
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(200, gin.H{
+			"code":    500,
+			"message": "redis connection error",
+		})
+
+		return
+	}
+
+	_, err = redisObj.Do("set", "myname", "daheige")
+	if err != nil {
+		ctx.JSON(200, gin.H{
+			"code":    500,
+			"message": "set data error",
+		})
+
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"code":    0,
+		"message": "set data success",
 	})
 }
