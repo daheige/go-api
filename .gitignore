@@ -2,3 +2,4 @@ logs*
 *.log
 go-api
 go-api.exe
+conf/*

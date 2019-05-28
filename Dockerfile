@@ -2,18 +2,12 @@ FROM docker.io/alpine
 
 WORKDIR /go
 
-#ENV TZ=Asia/Shanghai
-
-#RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-RUN mkdir /go/logs
+RUN mkdir -p /go/logs && mkdir /go/conf
 
 COPY ./go-api /go/go-api
-#可以不用把配置文件复制到容器中
-COPY ./app.yaml /go/
 
 EXPOSE 1338
 
-VOLUME [ "/go/logs"]
+VOLUME [ "/go/logs","/go/conf"]
 
-CMD [ "/go/go-api","-log_dir=/go/logs","-config_dir=/go"]
+CMD [ "/go/go-api","-log_dir=/go/logs","-config_dir=/go/conf"]
