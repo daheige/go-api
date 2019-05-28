@@ -27,5 +27,14 @@
         MaxIdle可以设置的小一些
         IdleTimeout相应地设置小一些
         MaxActive随意，够用就好，容易检测到异常
+
+# docker运行
+    1.构建golang二进制文件
+        $ sh bin/app-build
+    2.构建docker镜像
+        $ docker build -t go-api:v1 .
+    3.运行docker容器
+        $ docker run -it -d -p 1338:1338 --name=go-api-server -v /web/go/go-api/logs:/go/logs go-api:v1
+    4.访问localhost:1338，查看页面
 # 版权
     MIT
