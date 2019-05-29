@@ -36,5 +36,13 @@
     3.运行docker容器
         $ docker run -it -d -p 1338:1338 --name=go-api-server -v /web/go/go-api/logs:/go/logs go-api:v1
     4.访问localhost:1338，查看页面
+    
+    可以通过以下方式运行
+    sudo mkdir -p /data/www/go-api/logs
+    sudo mkdir -p /data/www/go-api/conf
+    sudo cp app.yaml /data/www/go-api/conf/
+    sudo chown -R $USER /data/www/go-api/
+    docker run -it -d -p 1336:1338 -v /data/www/go-api/logs:/go/logs -v /data/www/go-api/conf:/go/conf go-api:v1
+    这样就可以在任意目录中运行docker容器
 # 版权
     MIT
