@@ -1,4 +1,4 @@
-FROM docker.io/alpine
+FROM alpine:3.9
 
 WORKDIR /go
 
