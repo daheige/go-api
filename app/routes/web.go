@@ -29,7 +29,8 @@ func WebRoute(router *gin.Engine) {
 
 	//定义api前缀分组
 	v1 := router.Group("/v1")
-	v1.GET("/info", homeCtrl.Info)
+	// http://localhost:1338/v1/info/123
+	v1.GET("/info/:id", homeCtrl.Info)
 
 	//http://localhost:1338/v1/data?id=456
 	v1.GET("/data", homeCtrl.GetData)
