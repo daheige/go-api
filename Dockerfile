@@ -1,7 +1,5 @@
 FROM alpine:3.9
 
-WORKDIR /go
-
 #tsinghua alpine source
 #add curl
 RUN echo "https://mirror.tuna.tsinghua.edu.cn/alpine/v3.9/main/" > /etc/apk/repositories \
@@ -15,7 +13,10 @@ RUN echo "https://mirror.tuna.tsinghua.edu.cn/alpine/v3.9/main/" > /etc/apk/repo
 
 COPY ./go-api /go/go-api
 
-EXPOSE 1338
+#工作目录
+WORKDIR /go
+
+EXPOSE 1338 2338
 
 VOLUME [ "/go/logs","/go/conf"]
 

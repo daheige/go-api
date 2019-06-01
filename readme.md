@@ -16,6 +16,33 @@
     ├── logs            日志目录，可以自定义到别的路径中
     │   └── app.2019-05-06.log
     ├── main.go         程序入口文件
+
+# golang环境安装
+    1、linux环境，下载go1.12.5.linux-amd64.tar.gz
+        cd /usr/local/
+        sudo wget https://dl.google.com/go/go1.12.5.linux-amd64.tar.gz
+        sudo tar zxvf go1.12.5.linux-amd64.tar.gz
+        创建golang需要的目录
+        sudo mkdir /mygo
+        sudo mkdir /mygo/bin
+        sudo mkdir /mygo/src
+        sudo mkdir /mygo/pkg
+    2、设置环境变量vim ~/.bashrc 或者sudo vim /etc/profile
+        export GOROOT=/usr/local/go
+        export GOOS=linux
+        export GOPATH=/mygo
+        export GOSRC=$GOPATH/src
+        export GOBIN=$GOPATH/bin
+        export GOPKG=$GOPATH/pkg
+        #开启go mod机制
+        export GO111MODULE=auto
+
+        #禁用cgo模块
+        export CGO_ENABLED=0
+
+        export PATH=$GOROOT/bin:$GOBIN:$PATH
+    3、source ~/.bashrc 生效配置
+
 # 关于redisgo调优
     区分两种使用场景：
     1.高频调用的场景，需要尽量压榨redis的性能： 
@@ -46,6 +73,7 @@
     这样就可以在任意目录中运行docker容器
 
     性能监控
-        $ docker exec -it go-api curl http://localhost:2338/debug/pprof/goroutine?debug=1
+        浏览器访问http://localhost:2338/debug/pprof，就可以查看
+
 # 版权
     MIT

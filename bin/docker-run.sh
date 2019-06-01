@@ -24,7 +24,7 @@ fi
 #创建docker映射到当前主机上的目录
 mkdir -p $workdir/go-api/conf
 mkdir -p $workdir/go-api/logs
-chmod 777 -R $workdir/go-api/logs
+chmod 755 $workdir/go-api/logs
 cp $root_dir/app.yaml $workdir/go-api/conf/
 
 #停止之前的容器
@@ -35,7 +35,7 @@ if [ $cnt -gt 0 ];then
 fi
 
 #运行容器
-docker run -it -d -p 1338:1338 --name $containerName -v $workdir/go-api/logs:/go/logs -v $workdir/go-api/conf:/go/conf go-api-server:$version
+docker run -it -d -p 1338:1338 -p 2338:2338 --name $containerName -v $workdir/go-api/logs:/go/logs -v $workdir/go-api/conf:/go/conf go-api-server:$version
 
 echo "docker运行go-api成功!"
 echo "访问localhost:1338 开始你的应用之旅吧!"
