@@ -74,6 +74,24 @@
 
     性能监控
         浏览器访问http://localhost:2338/debug/pprof，就可以查看
+    在命令终端查看：
+        查看profile
+            go tool pprof http://localhost:2338/debug/pprof/profile?seconds=60
+            (pprof) top 10 --cum --sum
+
+            每一列的含义：
+            flat：给定函数上运行耗时
+            flat%：同上的 CPU 运行耗时总比例
+            sum%：给定函数累积使用 CPU 总比例
+            cum：当前函数加上它之上的调用运行总耗时
+            cum%：同上的 CPU 运行耗时总比例
+
+        它会收集30s的性能profile,可以用go tool查看
+            go tool pprof profile /home/heige/pprof/pprof.go-api.samples.cpu.002.pb.gz
+        查看heap和goroutine
+            查看活动对象的内存分配情况
+            go tool pprof http://localhost:2338/debug/pprof/heap
+            go tool pprof http://localhost:2338/debug/pprof/goroutine
 
 # 版权
     MIT
