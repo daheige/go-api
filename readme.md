@@ -44,5 +44,8 @@
     sudo chown -R $USER /data/www/go-api/
     docker run -it -d -p 1336:1338 -v /data/www/go-api/logs:/go/logs -v /data/www/go-api/conf:/go/conf go-api:v1
     这样就可以在任意目录中运行docker容器
+
+    性能监控
+        $ docker exec -it go-api curl http://localhost:2338/debug/pprof/goroutine?debug=1
 # 版权
     MIT

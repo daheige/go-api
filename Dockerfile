@@ -2,7 +2,16 @@ FROM alpine:3.9
 
 WORKDIR /go
 
-RUN mkdir -p /go/logs && mkdir /go/conf
+#tsinghua alpine source
+#add curl
+RUN echo "https://mirror.tuna.tsinghua.edu.cn/alpine/v3.9/main/" > /etc/apk/repositories \
+        && apk update \
+        && apk upgrade \
+        && apk add --no-cache bash \
+        bash-doc \
+        bash-completion curl \
+        && rm -rf /var/cache/apk/* \
+        && mkdir -p /go/logs && mkdir /go/conf
 
 COPY ./go-api /go/go-api
 
