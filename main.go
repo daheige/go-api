@@ -77,10 +77,12 @@ func main() {
 
 	//服务server设置
 	server := &http.Server{
-		Handler:      router,
-		Addr:         fmt.Sprintf("0.0.0.0:%d", port),
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		Handler:           router,
+		Addr:              fmt.Sprintf("0.0.0.0:%d", port),
+		IdleTimeout:       20 * time.Second, //tcp idle time
+		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       10 * time.Second,
+		WriteTimeout:      15 * time.Second,
 	}
 
 	//在独立携程中运行
@@ -118,7 +120,6 @@ func main() {
 	<-ctx.Done()
 
 	log.Println("shutting down")
-	os.Exit(0)
 }
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
