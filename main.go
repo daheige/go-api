@@ -5,9 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"go-api/app/config"
-	"io"
+	"go-api/app/extensions/Monitor"
 	"log"
-	"math/rand"
 	"net/http"
 	"net/http/pprof"
 	"os"
@@ -29,46 +28,6 @@ var log_dir string
 var config_dir string
 var wait time.Duration //平滑重启的等待时间1s or 1m
 
-// 初始化 web_reqeust_total， counter类型指标， 表示接收http请求总次数
-var WebRequestTotal = prometheus.NewCounterVec(
-	prometheus.CounterOpts{
-		Name: "web_reqeust_total",
-		Help: "Number of hello requests in total",
-	},
-	[]string{"method", "endpoint"}, //设置两个标签 请求方法和 路径 对请求总次数在两个
-)
-
-// web_request_duration_seconds，Histogram类型指标，bucket代表duration的分布区间
-var WebRequestDuration = prometheus.NewHistogramVec(
-	prometheus.HistogramOpts{
-		Name:    "web_request_duration_seconds",
-		Help:    "web request duration distribution",
-		Buckets: []float64{0.1, 0.3, 0.5, 0.7, 0.9, 1},
-	},
-	[]string{"method", "endpoint"},
-)
-
-// 包装 handler function,不侵入业务逻辑
-func Monitor(h http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-
-		h(w, r)
-
-		duration := time.Since(start)
-		// counter类型 metric的记录方式
-		WebRequestTotal.With(prometheus.Labels{"method": r.Method, "endpoint": r.URL.Path}).Inc()
-		// Histogram类型 meric的记录方式
-		WebRequestDuration.With(prometheus.Labels{"method": r.Method, "endpoint": r.URL.Path}).Observe(duration.Seconds())
-	}
-}
-
-func Query(w http.ResponseWriter, r *http.Request) {
-	//模拟业务查询耗时0~1s
-	time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
-	_, _ = io.WriteString(w, "some results")
-}
-
 func init() {
 	flag.IntVar(&port, "port", 1338, "app listen port")
 	flag.StringVar(&log_dir, "log_dir", "./logs", "log dir")
@@ -85,8 +44,8 @@ func init() {
 	config.InitRedis()
 
 	//注册监控指标
-	prometheus.MustRegister(WebRequestTotal)
-	prometheus.MustRegister(WebRequestDuration)
+	prometheus.MustRegister(Monitor.WebRequestTotal)
+	prometheus.MustRegister(Monitor.WebRequestDuration)
 
 	//性能监控的端口port+1000,只能在内网访问
 	go func() {
@@ -105,7 +64,6 @@ func init() {
 
 		//metrics监控
 		httpMux.Handle("/metrics", promhttp.Handler())
-		//httpMux.HandleFunc("/query", Monitor(Query))
 
 		if err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", pprof_port), httpMux); err != nil {
 			log.Println(err)
