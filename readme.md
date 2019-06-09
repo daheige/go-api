@@ -92,6 +92,9 @@
             查看活动对象的内存分配情况
             go tool pprof http://localhost:2338/debug/pprof/heap
             go tool pprof http://localhost:2338/debug/pprof/goroutine
+        
+        prometheus性能监控
+        http://localhost:2338/metrics
 
 # 版权
     MIT
