@@ -49,17 +49,17 @@ func writeLog(ctx *gin.Context, levelName string, message string, context map[st
 	//函数调用
 	_, file, line, _ := runtime.Caller(2)
 	logInfo := map[string]interface{}{
-		"tag":          tag,
-		"request_uri":  ctx.Request.RequestURI,
-		"log_id":       ctx.GetString("log_id"),
-		"options":      context,
-		"host":         ctx.Request.RemoteAddr,
-		"ip":           ctx.ClientIP(),
-		"ua":           ua,
-		"plat":         helper.GetDeviceByUa(ua), //当前设备匹配
-		"method":       ctx.Request.Method,
-		"current_line": line,
-		"current_file": file,
+		"tag":         tag,
+		"request_uri": ctx.Request.RequestURI,
+		"log_id":      ctx.GetString("log_id"),
+		"options":     context,
+		"host":        ctx.Request.RemoteAddr,
+		"ip":          ctx.ClientIP(),
+		"ua":          ua,
+		"plat":        helper.GetDeviceByUa(ua), //当前设备匹配
+		"method":      ctx.Request.Method,
+		"trace_line":  line,
+		"trace_file":  file,
 	}
 
 	switch levelName {
