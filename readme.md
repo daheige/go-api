@@ -96,5 +96,34 @@
         prometheus性能监控
         http://localhost:2338/metrics
 
+# wrk工具压力测试
+    https://github.com/wg/wrk
+    
+    ubuntu系统安装如下
+    1、安装wrk
+        # 安装 make 工具
+        sudo apt-get install make git
+        
+        # 安装 gcc编译环境
+        sudo apt-get install build-essential
+        sudo mkdir /web/
+        sudo chown -R $USER /web/
+        cd /web/
+        git clone https://github.com/wg/wrk.git
+        # 开始编译
+        cd /web/wrk
+        make
+    2、wrk压力测试
+        $ wrk -c 100 -t 8 -d 1m http://localhost:1338/index
+        Running 1m test @ http://localhost:1338/index
+          8 threads and 100 connections
+          Thread Stats   Avg      Stdev     Max   +/- Stdev
+            Latency    30.85ms   90.85ms   1.19s    98.33%
+            Req/Sec   597.30     78.64     0.92k    72.04%
+          280876 requests in 1.00m, 40.18MB read
+        Requests/sec:   4675.73
+        Transfer/sec:    684.92KB
+    3、metrics性能分析
+        http://localhost:2338/metrics
 # 版权
     MIT
