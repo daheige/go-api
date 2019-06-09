@@ -20,23 +20,17 @@ import (
     "msg": "exec end",
     "line_no": 41,
     "file_path": "/web/go/go-api/app/extensions/Logger/log.go",
-    "context":
-    {
-        "current_file": "/web/go/go-api/app/middleware/LogWare.go",
-        "current_line": 44,
-        "host": "[::1]:56752",
-        "ip": "::1",
-        "log_id": "a85367902fd194f35338ca640dc9509c",
-        "method": "GET",
-        "options":
-        {
-            "exec_time": 0.000480627
-        },
-        "plat": "web",
-        "request_uri": "/",
-        "tag": "_",
-        "ua": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
-    }
+	"current_file": "/web/go/go-api/app/middleware/LogWare.go",
+	"current_line": 44,
+	"host": "[::1]:56752",
+	"ip": "::1",
+	"log_id": "a85367902fd194f35338ca640dc9509c",
+	"method": "GET",
+    "exec_time": 0.000480627
+	"plat": "web",
+	"request_uri": "/",
+	"tag": "_",
+	"ua": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
 }
 */
 
@@ -73,6 +67,8 @@ func writeLog(ctx *gin.Context, levelName string, message string, context map[st
 		logger.Error(message, logInfo)
 	case "emergency":
 		logger.DPanic(message, logInfo)
+	default:
+		logger.Info(message, logInfo)
 	}
 }
 
