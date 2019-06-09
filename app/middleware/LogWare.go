@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"go-api/app/extensions/Logger"
-	"log"
 	"time"
 
 	"github.com/daheige/thinkgo/common"
@@ -15,10 +14,11 @@ type LogWare struct{}
 func (ware *LogWare) Access() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		t := time.Now()
-		uri := ctx.Request.RequestURI
+		//uri := ctx.Request.RequestURI
 
-		log.Println("request before")
-		log.Println("request uri: ", uri)
+		//性能分析后发现log.Println输出需要分配大量的内存空间,而且每次写入都需要枷锁处理
+		//log.Println("request before")
+		//log.Println("request uri: ", uri)
 
 		//如果采用了nginx x-request-id功能，可以获得x-request-id
 		logId := ctx.GetHeader("X-Request-Id")
@@ -31,7 +31,7 @@ func (ware *LogWare) Access() gin.HandlerFunc {
 
 		ctx.Next()
 
-		log.Println("request end")
+		//log.Println("request end")
 		//请求结束记录日志
 		c := map[string]interface{}{
 			"exec_time": time.Now().Sub(t).Seconds(),
@@ -50,7 +50,7 @@ func (ware *LogWare) Recover() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-				log.Printf("error:%v", err)
+				//log.Printf("error:%v", err)
 				Logger.Emergency(ctx, "exec panic", map[string]interface{}{
 					"trace_error": err,
 					"trace_info":  string(common.CatchStack()),
