@@ -5,9 +5,11 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/daheige/thinkgo/common"
+
 	"github.com/gin-gonic/gin"
 
-	"github.com/daheige/thinkgo/common"
+	"github.com/daheige/thinkgo/logger"
 )
 
 /**
@@ -38,7 +40,7 @@ import (
 }
 */
 
-func writeLog(ctx *gin.Context, levelName string, message interface{}, context map[string]interface{}) {
+func writeLog(ctx *gin.Context, levelName string, message string, context map[string]interface{}) {
 	tag := strings.Replace(ctx.Request.RequestURI, "/", "_", -1)
 	ua := ctx.GetHeader("User-Agent")
 
@@ -62,35 +64,63 @@ func writeLog(ctx *gin.Context, levelName string, message interface{}, context m
 
 	switch levelName {
 	case "info":
-		common.InfoLog(message, logInfo)
+		logger.Info(message, logInfo)
 	case "debug":
-		common.DebugLog(message, logInfo)
+		logger.Debug(message, logInfo)
 	case "warn":
-		common.WarnLog(message, logInfo)
+		logger.Warn(message, logInfo)
 	case "error":
-		common.ErrorLog(message, logInfo)
+		logger.Error(message, logInfo)
 	case "emergency":
-		common.EmergLog(message, logInfo)
+		logger.DPanic(message, logInfo)
 	}
 }
 
-func Info(ctx *gin.Context, message interface{}, context map[string]interface{}) {
+func Info(ctx *gin.Context, message string, context map[string]interface{}) {
 	writeLog(ctx, "info", message, context)
 }
 
-func Debug(ctx *gin.Context, message interface{}, context map[string]interface{}) {
+func Debug(ctx *gin.Context, message string, context map[string]interface{}) {
 	writeLog(ctx, "debug", message, context)
 }
 
-func Warn(ctx *gin.Context, message interface{}, context map[string]interface{}) {
+func Warn(ctx *gin.Context, message string, context map[string]interface{}) {
 	writeLog(ctx, "warn", message, context)
 }
 
-func Error(ctx *gin.Context, message interface{}, context map[string]interface{}) {
+func Error(ctx *gin.Context, message string, context map[string]interface{}) {
 	writeLog(ctx, "error", message, context)
 }
 
 //致命错误或panic捕获
-func Emergency(ctx *gin.Context, message interface{}, context map[string]interface{}) {
+func Emergency(ctx *gin.Context, message string, context map[string]interface{}) {
 	writeLog(ctx, "emergency", message, context)
+}
+
+//异常捕获处理
+func Recover(c interface{}) {
+	defer func() {
+		if err := recover(); err != nil {
+			if ctx, ok := c.(*gin.Context); ok {
+				Emergency(ctx, "exec panic", map[string]interface{}{
+					"error":       err,
+					"error_trace": string(common.CatchStack()),
+				})
+
+				//响应状态
+				ctx.AbortWithStatusJSON(500, gin.H{
+					"code":    500,
+					"message": "server error",
+				})
+
+				return
+			}
+
+			logger.DPanic("exec panic", map[string]interface{}{
+				"error":       err,
+				"error_trace": string(common.CatchStack()),
+			})
+		}
+	}()
+
 }
