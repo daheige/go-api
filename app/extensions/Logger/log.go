@@ -5,8 +5,6 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/daheige/thinkgo/common"
-
 	"github.com/gin-gonic/gin"
 
 	"github.com/daheige/thinkgo/logger"
@@ -100,7 +98,7 @@ func Recover(c interface{}) {
 			if ctx, ok := c.(*gin.Context); ok {
 				Emergency(ctx, "exec panic", map[string]interface{}{
 					"error":       err,
-					"error_trace": string(common.CatchStack()),
+					"error_trace": string(logger.Stack()),
 				})
 
 				//响应状态
@@ -114,7 +112,7 @@ func Recover(c interface{}) {
 
 			logger.DPanic("exec panic", map[string]interface{}{
 				"error":       err,
-				"error_trace": string(common.CatchStack()),
+				"error_trace": string(logger.Stack()),
 			})
 		}
 	}()
