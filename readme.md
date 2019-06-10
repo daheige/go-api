@@ -114,15 +114,16 @@
         cd /web/wrk
         make
     2、wrk压力测试
-        $ wrk -c 100 -t 8 -d 1m http://localhost:1338/index
-        Running 1m test @ http://localhost:1338/index
-          8 threads and 100 connections
-          Thread Stats   Avg      Stdev     Max   +/- Stdev
-            Latency    30.85ms   90.85ms   1.19s    98.33%
-            Req/Sec   597.30     78.64     0.92k    72.04%
-          280876 requests in 1.00m, 40.18MB read
-        Requests/sec:   4675.73
-        Transfer/sec:    684.92KB
+        $ wrk -c 100 -t 8 -d 2m http://localhost:1338/index
+        Running 2m test @ http://localhost:1338/index
+        8 threads and 100 connections
+        Thread Stats   Avg      Stdev     Max   +/- Stdev
+            Latency    19.50ms   40.88ms 829.98ms   96.82%
+            Req/Sec     0.89k   166.70     1.68k    71.41%
+        829464 requests in 2.00m, 118.66MB read
+        Socket errors: connect 0, read 0, write 0, timeout 96
+        Requests/sec:   6911.09
+        Transfer/sec:      0.99MB
     3、metrics性能分析
         http://localhost:2338/metrics
 # 版权
