@@ -20,7 +20,6 @@ import (
 
 	"go-api/app/routes"
 
-	"github.com/daheige/thinkgo/common"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -53,7 +52,7 @@ func init() {
 
 	//性能监控的端口port+1000,只能在内网访问
 	go func() {
-		defer common.CheckPanic()
+		defer logger.Recover()
 
 		pprof_port := port + 1000
 		log.Println("server pprof run on: ", pprof_port)
@@ -104,7 +103,7 @@ func main() {
 	//在独立携程中运行
 	log.Println("server run on: ", port)
 	go func() {
-		defer common.CheckPanic()
+		defer logger.Recover()
 
 		if err := server.ListenAndServe(); err != nil {
 			log.Println(err)
