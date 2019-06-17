@@ -49,6 +49,8 @@ func init() {
 	//注册监控指标
 	prometheus.MustRegister(Monitor.WebRequestTotal)
 	prometheus.MustRegister(Monitor.WebRequestDuration)
+	prometheus.MustRegister(Monitor.CpuTemp)
+	prometheus.MustRegister(Monitor.HdFailures)
 
 	//性能监控的端口port+1000,只能在内网访问
 	go func() {

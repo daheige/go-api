@@ -29,6 +29,19 @@ var WebRequestDuration = prometheus.NewHistogramVec(
 	[]string{"method", "endpoint"},
 )
 
+var CpuTemp = prometheus.NewGauge(prometheus.GaugeOpts{
+	Name: "cpu_temperature_celsius",
+	Help: "Current temperature of the CPU.",
+})
+
+var HdFailures = prometheus.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "hd_errors_total",
+		Help: "Number of hard-disk errors.",
+	},
+	[]string{"device"},
+)
+
 // 对于http原始的处理器函数，包装 handler function,不侵入业务逻辑
 func MonitorHandler(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
