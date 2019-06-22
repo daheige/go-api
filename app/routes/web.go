@@ -12,6 +12,7 @@ func WebRoute(router *gin.Engine) {
 	//访问日志中间件处理
 	logWare := &middleware.LogWare{}
 	router.Use(logWare.Access(), logWare.Recover())
+	router.NoRoute(middleware.NotFoundHandler())
 
 	//对所有的请求进行性能监控，一般来说生产环境，可以对指定的接口做性能监控
 	//router.Use(logWare.Access(), logWare.Recover(), Monitor.Monitor())
