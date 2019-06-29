@@ -3,6 +3,7 @@ package controller
 import (
 	"go-api/app/logic"
 	"log"
+	"time"
 
 	"go-api/app/config"
 
@@ -81,5 +82,25 @@ func (ctrl *HomeController) SetData(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{
 		"code":    0,
 		"message": "set data success",
+	})
+}
+
+// When starting new Goroutines inside a middleware or handler,
+// you SHOULD NOT use the original context inside it,
+// you have to use a read-only copy.
+func (ctrl *HomeController) LongAsync(ctx *gin.Context) {
+	// create copy to be used inside the goroutine
+	cCp := ctx.Copy()
+	go func() {
+		// simulate a long task with time.Sleep(). 3 seconds
+		time.Sleep(3 * time.Second)
+
+		// note that you are using the copied context "cCp", IMPORTANT
+		log.Println("Done! in path " + cCp.Request.URL.Path)
+	}()
+
+	ctx.JSON(200, gin.H{
+		"code":    0,
+		"message": "ok",
 	})
 }
