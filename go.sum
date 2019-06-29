@@ -12,8 +12,8 @@ github.com/bitly/go-simplejson v0.5.0/go.mod h1:cXHtHw4XUPsvGaxgjIAn8PhEWG9NfngE
 github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869/go.mod h1:Ekp36dRnpXw/yCqJaO+ZrUyxD+3VXMFFr56k5XYrpB4=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cockroachdb/apd v1.1.0/go.mod h1:8Sl8LxpKi29FqWXR16WEFZRNSz3SoPzUzeMeY4+DwBQ=
-github.com/daheige/thinkgo v1.1.11 h1:QuN3sXJ7DJHmELulBE0CuVU+LUUF5fuQ70/HrYANl24=
-github.com/daheige/thinkgo v1.1.11/go.mod h1:v+GZVzbooIPR9bk/zWZihcZGEICkLALF5tWwUulQnLo=
+github.com/daheige/thinkgo v1.2.0 h1:u/6VHPj0oihtN0Xa0whdehOSSidG5Cyas85oaxF9U0Y=
+github.com/daheige/thinkgo v1.2.0/go.mod h1:v+GZVzbooIPR9bk/zWZihcZGEICkLALF5tWwUulQnLo=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/denisenkom/go-mssqldb v0.0.0-20190121005146-b04fd42d9952/go.mod h1:xN/JuLBIz4bjkxNmByTiV1IbhfnYb6oo99phBn4Eqhc=

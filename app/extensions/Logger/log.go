@@ -12,23 +12,21 @@ import (
 
 /**
  * {
-    "level": 200,
-    "level_name": "info",
-    "local_time": "2019-05-07 22:21:56.941",
-    "msg": "exec end",
-    "line_no": 41,
-    "file_path": "/web/go/go-api/app/extensions/Logger/log.go",
-	"current_file": "/web/go/go-api/app/middleware/LogWare.go",
-	"current_line": 44,
-	"host": "[::1]:56752",
-	"ip": "::1",
-	"log_id": "a85367902fd194f35338ca640dc9509c",
-	"method": "GET",
-    "exec_time": 0.000480627
-	"plat": "web",
-	"request_uri": "/",
-	"tag": "_",
-	"ua": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36"
+    "level":"info",
+    "time_local":"2019-06-29T12:00:22.936+0800",
+    "line":"/web/go/go-api/app/extensions/Logger/log.go:59",
+    "msg":"exec start",
+    "ip":"::1",
+    "ua":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36",
+    "trace_line":30,
+    "log_id":"5197eeb0b7ec2847fe5fb412cd8f9ebc",
+    "options":null,
+    "host":"[::1]:36850",
+    "plat":"web",
+    "method":"GET",
+    "trace_file":"/web/go/go-api/app/middleware/LogWare.go",
+    "tag":"_",
+    "request_uri":"/"
 }
 */
 
