@@ -43,4 +43,6 @@ func WebRoute(router *gin.Engine) {
 	v1.GET("/data", homeCtrl.GetData)
 
 	v1.GET("/set-data", homeCtrl.SetData)
+
+	router.GET("/long-async", homeCtrl.LongAsync)
 }
