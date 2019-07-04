@@ -42,7 +42,16 @@
 
         export PATH=$GOROOT/bin:$GOBIN:$PATH
     3、source ~/.bashrc 生效配置
+# 开始运行
+    go run main.go
+    访问localhost:1338
 
+# 线上部署
+    方法1：
+        请用supervior启动二进制文件，参考go-api.ini文件
+    方法2：
+        采用docker运行二进制文件
+        
 # 关于redisgo调优
     区分两种使用场景：
     1.高频调用的场景，需要尽量压榨redis的性能： 
