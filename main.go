@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"go-api/app/config"
-	"go-api/app/extensions/Monitor"
 	"log"
 	"net/http"
 	"net/http/pprof"
@@ -13,6 +12,8 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/daheige/thinkgo/monitor"
 
 	"github.com/daheige/thinkgo/logger"
 
@@ -47,10 +48,10 @@ func init() {
 	config.InitRedis()
 
 	//注册监控指标
-	prometheus.MustRegister(Monitor.WebRequestTotal)
-	prometheus.MustRegister(Monitor.WebRequestDuration)
-	prometheus.MustRegister(Monitor.CpuTemp)
-	prometheus.MustRegister(Monitor.HdFailures)
+	prometheus.MustRegister(monitor.WebRequestTotal)
+	prometheus.MustRegister(monitor.WebRequestDuration)
+	prometheus.MustRegister(monitor.CpuTemp)
+	prometheus.MustRegister(monitor.HdFailures)
 
 	//性能监控的端口port+1000,只能在内网访问
 	go func() {

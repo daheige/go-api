@@ -2,7 +2,7 @@ package routes
 
 import (
 	"go-api/app/controller"
-	"go-api/app/extensions/Monitor"
+	"go-api/app/helper"
 	"go-api/app/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -11,11 +11,12 @@ import (
 func WebRoute(router *gin.Engine) {
 	//访问日志中间件处理
 	logWare := &middleware.LogWare{}
-	router.Use(logWare.Access(), logWare.Recover())
-	router.NoRoute(middleware.NotFoundHandler())
 
 	//对所有的请求进行性能监控，一般来说生产环境，可以对指定的接口做性能监控
-	//router.Use(logWare.Access(), logWare.Recover(), Monitor.Monitor())
+	router.Use(logWare.Access(), logWare.Recover(), helper.Monitor())
+	//router.Use(logWare.Access(), logWare.Recover())
+
+	router.NoRoute(middleware.NotFoundHandler())
 
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{
@@ -31,7 +32,9 @@ func WebRoute(router *gin.Engine) {
 	homeCtrl := &controller.HomeController{}
 
 	//对个别接口进行性能监控
-	router.GET("/index", Monitor.Monitor(), homeCtrl.Index)
+	//router.GET("/index", helper.Monitor(), homeCtrl.Index)
+	router.GET("/index", homeCtrl.Index)
+
 	router.GET("/test", homeCtrl.Test)
 
 	//定义api前缀分组
