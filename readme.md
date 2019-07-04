@@ -42,7 +42,15 @@
 
         export PATH=$GOROOT/bin:$GOBIN:$PATH
     3、source ~/.bashrc 生效配置
+# 设置goproxy代理
+    vim ~/.bashrc添加如下内容：
+    export GOPROXY=https://goproxy.io
+    或者使用 export GOPROXY=https://athens.azurefd.net
+    让bashrc生效
+    source ~/.bashrc
+  
 # 开始运行
+    go mod tidy #安装golang module包
     go run main.go
     访问localhost:1338
 
