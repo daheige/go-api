@@ -46,6 +46,7 @@
     vim ~/.bashrc添加如下内容：
     export GOPROXY=https://goproxy.io
     或者使用 export GOPROXY=https://athens.azurefd.net
+    或者使用 export GOPROXY=https://mirrors.aliyun.com/goproxy/
     让bashrc生效
     source ~/.bashrc
   
