@@ -144,5 +144,19 @@
         Transfer/sec:      0.99MB
     3、metrics性能分析
         http://localhost:2338/metrics
+
+# 关于http超时的限制
+    不恰当的http.Server设置，以及未设置超时处理，可能导致http net.Conn连接泄漏，从而出现太多的文件句柄
+    最为直接的原因，就导致服务异常，无法正常响应，出现too many open files的问题，解决方案参考main.go
+    压力测试：
+    $ wrk -t 8 -c 400 -d 20s http://localhost:1338/indexRunning 20s test @ http://localhost:1338/index
+      8 threads and 400 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency    50.61ms   31.75ms 283.06ms   67.54%
+        Req/Sec     0.99k   263.19     3.06k    85.16%
+      156615 requests in 20.05s, 22.40MB read
+    Requests/sec:   7809.62
+    Transfer/sec:      1.12MB
+    
 # 版权
     MIT

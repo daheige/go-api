@@ -94,13 +94,26 @@ func main() {
 	routes.WebRoute(router)
 
 	//服务server设置
+	// IdleTimeout is the maximum amount of time to wait for the
+	// next request when keep-alives are enabled. If IdleTimeout
+	// is zero, the value of ReadTimeout is used. If both are
+	// zero, ReadHeaderTimeout is used.
+
+	// ReadHeaderTimeout is the amount of time allowed to read
+	// request headers. The connection's read deadline is reset
+	// after reading the headers and the Handler can decide what
+	// is considered too slow for the body.
+
+	//对于idleTimeout一般不建议设置，如果不设置默认采用ReadTimeout
+	//对于ReadHeaderTimeout一般不建议设置，默认采用ReadTimeout
+	//详细分析: https://blog.csdn.net/busai2/article/details/82634049
 	server := &http.Server{
-		Handler:           router,
-		Addr:              fmt.Sprintf("0.0.0.0:%d", port),
-		IdleTimeout:       20 * time.Second, //tcp idle time
-		ReadHeaderTimeout: 10 * time.Second,
-		ReadTimeout:       10 * time.Second,
-		WriteTimeout:      15 * time.Second,
+		Handler: router,
+		Addr:    fmt.Sprintf("0.0.0.0:%d", port),
+		//IdleTimeout:       10 * time.Second, //tcp idle time
+		//ReadHeaderTimeout: 10 * time.Second, //read header timeout
+		ReadTimeout:  5 * time.Second,  //read request timeout
+		WriteTimeout: 10 * time.Second, //write timeout
 	}
 
 	//在独立携程中运行
