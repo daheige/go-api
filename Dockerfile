@@ -5,7 +5,7 @@ FROM alpine:3.9
 RUN echo "https://mirror.tuna.tsinghua.edu.cn/alpine/v3.9/main/" > /etc/apk/repositories \
         && apk update \
         && apk upgrade \
-        && apk add --no-cache bash \
+        && apk add --no-cache ca-certificates bash \
         bash-doc \
         bash-completion curl \
         && rm -rf /var/cache/apk/* \
