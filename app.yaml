@@ -12,3 +12,16 @@ RedisCommon:
   MaxIdle: 10 #表示连接池空闲连接列表的长度限制
   MaxActive: 100 #表示连接池中最大连接数限制
   IdleTimeout: 30 #最大的空闲连接等待时间，超过此时间后，空闲连接将被关闭
+
+#db 配置
+DbDefault:
+    Ip: 127.0.0.1
+    Port: 3306
+    User: root
+    Password: root
+    Database: test
+    MaxIdleConns: 60
+    MaxOpenConns: 600
+    ParseTime: true
+    SqlCmd: true
+    UsePool: true

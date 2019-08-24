@@ -9,10 +9,6 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
-var AppEnv string
-var AppDebug bool
-var conf *yamlConf.ConfigEngine
-
 func InitConf(path string) {
 	conf = yamlConf.NewConf()
 	err := conf.LoadConf(path + "/app.yaml")
@@ -27,6 +23,11 @@ func InitConf(path string) {
 	default:
 		AppDebug = false
 	}
+
+	//数据库配置
+	conf.GetStruct("DbDefault", dbConf)
+	dbConf.SetDbPool()              //建立db连接池
+	dbConf.SetEngineName("default") //为每个db设置一个engine name
 }
 
 func InitRedis() {

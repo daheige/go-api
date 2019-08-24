@@ -44,8 +44,9 @@ func (ctrl *HomeController) Info(ctx *gin.Context) {
 func (ctrl *HomeController) GetData(ctx *gin.Context) {
 	homeLogic := logic.HomeLogic{}
 	homeLogic.SetCtx(ctx)
+	id := ctx.DefaultQuery("id", "hello")
 
-	data := homeLogic.GetData()
+	data := homeLogic.GetData(id)
 
 	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
 		"code":    0,

@@ -118,6 +118,8 @@ func main() {
 
 	//在独立携程中运行
 	log.Println("server run on: ", port)
+	log.Println("server pid: ", os.Getppid())
+
 	go func() {
 		defer logger.Recover()
 
