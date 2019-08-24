@@ -223,9 +223,31 @@
     89
     
     当请求结束后，查看mysql连接情况
-      $ lsof -p 14009 -i | grep mysql | wc -l
+    $ lsof -p 14009 -i | grep mysql | wc -l
       60
-      
+    $ netstat -an | grep TIME_WAIT | grep 3306 | wc -l
+    0
+    
+    $ netstat -ae|grep mysql | wc -l
+    122
+    
+    $ netstat -an | grep TIME_WAIT | grep 3306
+    $ netstat -an|awk '/tcp/ {print $6}'|sort|uniq -c
+        134 ESTABLISHED
+          1 FIN_WAIT1
+         25 LISTEN
+          3 SYN_SENT
+          1 TIME_WAIT
+    $ netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}'
+        TIME_WAIT 1
+        ESTABLISHED 146
+        LAST_ACK 1
+        SYN_SENT 2
+    
+    查看TIME_WAIT数量，$ netstat -ant| grep -i time_wait
+    $ netstat -an | grep -c TIME_WAIT 
+    2
+    
     $ ls -l /proc/14009/fd | wc -l
     6
     
