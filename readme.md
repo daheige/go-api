@@ -157,6 +157,127 @@
       156615 requests in 20.05s, 22.40MB read
     Requests/sec:   7809.62
     Transfer/sec:      1.12MB
+
+# db压力测试
+    $ cd mytest
+    $ wrk -t 8 -d 5m -c 400 http://localhost:1338/v1/data
+    Running 5m test @ http://localhost:1338/v1/data
+      8 threads and 400 connections
+    
+    
+    查看文件句柄fd情况
+    $ ps -ef | grep "go run"
+    heige    14009 13055  0 13:36 pts/8    00:00:00 go run main.go
+    
+    $ lsof -p 14009 | wc -l
+    12
+    $ lsof -p 14009
+    COMMAND   PID  USER   FD      TYPE DEVICE  SIZE/OFF     NODE NAME
+    go      14009 heige  cwd       DIR    8,1      4096  2490371 /web/go/go-api
+    go      14009 heige  rtd       DIR    8,1      4096        2 /
+    go      14009 heige  txt       REG    8,1  14613596 22809199 /usr/local/go/bin/go
+    go      14009 heige  mem       REG    8,1   2030544 24252912 /lib/x86_64-linux-gnu/libc-2.27.so
+    go      14009 heige  mem       REG    8,1    144976 24253540 /lib/x86_64-linux-gnu/libpthread-2.27.so
+    go      14009 heige  mem       REG    8,1    170960 24252893 /lib/x86_64-linux-gnu/ld-2.27.so
+    go      14009 heige    0u      CHR  136,8       0t0       11 /dev/pts/8
+    go      14009 heige    1u      CHR  136,8       0t0       11 /dev/pts/8
+    go      14009 heige    2u      CHR  136,8       0t0       11 /dev/pts/8
+    go      14009 heige    3w      REG    8,1 139838601  7209351 /home/heige/.cache/go-build/log.txt
+    go      14009 heige    4u  a_inode   0,13         0    10638 [eventpoll]
+    
+    压力测试过程中，查看mysql
+    $ lsof -i TCP | grep mysql | wc -l
+    42
+    
+    $ lsof -i :3306 | wc -l
+    261
+    $ lsof -i :3306 | wc -l
+    60
+    
+    正在建立连接通信的mysql
+    $ lsof -i :3306 | grep ESTABLISHED | wc -l
+    60
+    
+    查看mysql建立tcp个数
+    $ lsof  -i -sTCP:ESTABLISHED | grep mysql | wc -l
+    107
+    
+    查看1338建立连接的个数
+    $ lsof -i :1338 | wc -l
+    802
+    
+    查看进程里的mysql连接情况
+    $ lsof -p 14009 -i | grep mysql | wc -l
+    71
+    
+    比较配置文件中的空闲连接和mysql实际连接的个数,基本上一样
+    $ lsof -p 14009 -i | grep mysql | wc -l
+    60
+    
+    当大规模的请求过来的时候，fd数量里面上涨
+    $ lsof -p 14009 -i | wc -l
+    886
+    
+    当请求下来后，查看fd情况
+    $ lsof -p 14009 -i | wc -l
+    89
+    
+    当请求结束后，查看mysql连接情况
+      $ lsof -p 14009 -i | grep mysql | wc -l
+      60
+      
+    $ ls -l /proc/14009/fd | wc -l
+    6
+    
+    查看进程的fd情况
+    $ lsof -p 14009 | wc -l
+    12
+    端口连接情况
+    $ lsof -p 14009 -i :1338 | wc -l
+    13
+    
+    经过压力测试表明gorm mysql连接池方式，当请求过大时候，超过空闲的连接数，就会新建连接句柄放入连接池中
+    当请求下来后，mysql tcp都会降下来，golang进程的fd句柄也降下来了。
+      
+    压力测试结果：
+    $ wrk -t 8 -d 5m -c 400 http://localhost:1338/v1/data
+    Running 5m test @ http://localhost:1338/v1/data
+     8 threads and 400 connections
+     Thread Stats   Avg      Stdev     Max   +/- Stdev
+       Latency   231.31ms  129.26ms   1.64s    76.03%
+       Req/Sec   227.90    110.72   780.00     64.81%
+     535769 requests in 5.00m, 87.88MB read
+    Requests/sec:   1785.47
+    Transfer/sec:    299.90KB
+   
+# 查看机器的cpu，核数
+    CPU总核数 = 物理CPU个数 * 每颗物理CPU的核数 
+    总逻辑CPU数 = 物理CPU个数 * 每颗物理CPU的核数 * 超线程数
+    
+    复制代码
+    查看CPU信息（型号）
+    # cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c
+    4  Intel(R) Core(TM) i5-2450M CPU @ 2.50GHz
+    
+    # 查看物理CPU个数
+    # cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l
+    1
+    
+    # 查看每个物理CPU中core的个数(即核数)
+    # cat /proc/cpuinfo| grep "cpu cores"| uniq
+    cpu cores	: 2
+    
+    # 查看逻辑CPU的个数
+    # cat /proc/cpuinfo| grep "processor"| wc -l
+    4
+    
+    $ top -H -p 14009
+    
+    top - 14:18:48 up 1 day, 16:36,  1 user,  load average: 12.52, 8.71, 7.68
+    Threads:  10 total,   0 running,  10 sleeping,   0 stopped,   0 zombie
+    %Cpu(s): 71.2 us, 20.4 sy,  0.0 ni,  4.0 id,  0.0 wa,  0.0 hi,  4.4 si,  0.0 st
+    KiB Mem :  8110128 total,   149228 free,  5636640 used,  2324260 buff/cache
+    KiB Swap:   998396 total,   848400 free,   149996 used.  1618124 avail Mem
     
 # 版权
     MIT
