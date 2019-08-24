@@ -13,6 +13,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/pkg/profile"
+
 	"github.com/daheige/thinkgo/monitor"
 
 	"github.com/daheige/thinkgo/logger"
@@ -88,6 +90,12 @@ func init() {
 }
 
 func main() {
+	//退出时候会自动采集profile性能指标
+
+	//defer profile.Start(profile.MemProfile, profile.BlockProfile, profile.MutexProfile, profile.ThreadcreationProfile).Stop()
+
+	defer profile.Start().Stop()
+
 	router := gin.New()
 
 	//加载路由文件中的路由
@@ -132,7 +140,7 @@ func main() {
 	ch := make(chan os.Signal, 1)
 	// We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C)
 	// recivie signal to exit main goroutine
-	//window signal
+	// window signal
 	// signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, syscall.SIGHUP)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR2, os.Interrupt, syscall.SIGHUP)
 
