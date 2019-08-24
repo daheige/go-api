@@ -13,7 +13,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/pkg/profile"
+	//"github.com/pkg/profile"
 
 	"github.com/daheige/thinkgo/monitor"
 
@@ -94,7 +94,7 @@ func main() {
 
 	//defer profile.Start(profile.MemProfile, profile.BlockProfile, profile.MutexProfile, profile.ThreadcreationProfile).Stop()
 
-	defer profile.Start().Stop()
+	//defer profile.Start().Stop()
 
 	router := gin.New()
 
