@@ -111,6 +111,11 @@
             go tool pprof http://localhost:2338/debug/pprof/heap
             go tool pprof http://localhost:2338/debug/pprof/goroutine
         
+        web图形化查看
+            1. $ sudo apt install graphviz
+            2. go tool pprof profile /home/heige/pprof/pprof.go-api.samples.cpu.002.pb.gz
+            3. (pprof) web
+        
         prometheus性能监控
         http://localhost:2338/metrics
 
@@ -300,6 +305,45 @@
     %Cpu(s): 71.2 us, 20.4 sy,  0.0 ni,  4.0 id,  0.0 wa,  0.0 hi,  4.4 si,  0.0 st
     KiB Mem :  8110128 total,   149228 free,  5636640 used,  2324260 buff/cache
     KiB Swap:   998396 total,   848400 free,   149996 used.  1618124 avail Mem
+
+# 采用profile库查看pprof性能指标
+    import "github.com/pkg/profile"
+    
+    在函数里面
+    defer profile.Start().Stop()
+    
+    参考mytest/app.go，其他性能指标可以看profile源码
+    $ go tool pprof -http=:8080 /tmp/profile235146184/cpu.pprof
+    [11667:11684:0824/203331.299458:ERROR:browser_process_sub_thread.cc(221)] Waited 3 ms for network service
+    open /tmp/go-build321889850/b001/exe/app: no such file or directory
+    
+    自动打开浏览器访问
+    http://localhost:8080/ui/top
+    
+    火焰图： http://localhost:8080/ui/flamegraph
+    
+    测试db性能
+    $ wrk -t 8 -d 5m -c 400 http://localhost:1338/v1/data
+    Running 5m test @ http://localhost:1338/v1/data
+      8 threads and 400 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency   164.29ms   96.87ms   1.75s    81.10%
+        Req/Sec   322.53    129.82   800.00     66.26%
+      762208 requests in 5.00m, 125.03MB read
+    Requests/sec:   2540.31
+    Transfer/sec:    426.69KB
+    
+    请求结束后，退出app.go 会生成cpu.pprof
+    2019/08/24 20:57:51 user:  &{2 hello}
+    ^C2019/08/24 20:57:58 profile: caught interrupt, stopping profiles
+    2019/08/24 20:57:58 exit signal:  interrupt
+    2019/08/24 20:57:58 http: Server closed
+    2019/08/24 20:57:58 profile: cpu profiling disabled, /tmp/profile682666456/cpu.pprof
+    
+    用pprof工具查看
+    $ go tool pprof -http=:8080 /tmp/profile682666456/cpu.pprof
+    [12616:12634:0824/210007.864297:ERROR:browser_process_sub_thread.cc(221)] Waited 1043 ms for network service
+    http://localhost:8080/ui/
     
 # 版权
     MIT
