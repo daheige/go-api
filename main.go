@@ -90,6 +90,7 @@ func init() {
 }
 
 func main() {
+	//开发环境可以打开这个profile性能分析
 	//退出时候会自动采集profile性能指标
 
 	//defer profile.Start(profile.MemProfile, profile.BlockProfile, profile.MutexProfile, profile.ThreadcreationProfile).Stop()
