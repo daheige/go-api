@@ -55,6 +55,21 @@ func (ctrl *HomeController) GetData(ctx *gin.Context) {
 	})
 }
 
+func (ctrl *HomeController) PostData(ctx *gin.Context) {
+	homeLogic := logic.HomeLogic{}
+	homeLogic.SetCtx(ctx)
+	id := ctx.DefaultPostForm("id", "hello")
+
+	log.Println("id: ", id)
+	data := homeLogic.GetData(id)
+
+	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
+		"code":    0,
+		"message": "ok",
+		"data":    data,
+	})
+}
+
 func (ctrl *HomeController) SetData(ctx *gin.Context) {
 	redisObj, err := config.GetRedisObj("default")
 	if err != nil {
