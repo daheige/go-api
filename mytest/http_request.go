@@ -24,6 +24,10 @@ func main() {
 		},
 	}
 
+	res := s.Do("post", "http://localhost:1338/v1/data", opt)
+	log.Println("err: ", res.Err)
+	log.Println("body:", res.Text())
+
 	nums := 30000
 	//每秒100个进行请求
 	var wg sync.WaitGroup
