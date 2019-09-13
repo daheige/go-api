@@ -176,6 +176,24 @@
         Socket errors: connect 0, read 0, write 0, timeout 96
         Requests/sec:   6911.09
         Transfer/sec:      0.99MB
+
+        压力测试/api/info接口
+        $ wrk -t 8 -c 100 -d 1m --latency http://localhost:1338/api/info
+        Running 1m test @ http://localhost:1338/api/info
+        8 threads and 100 connections
+        Thread Stats Avg Stdev Max +/- Stdev
+        Latency 21.69ms 48.75ms 604.71ms 97.39%
+        Req/Sec 833.19 149.83 1.76k 78.02%
+        Latency Distribution
+        50% 15.34ms
+        75% 18.86ms
+        90% 29.00ms
+        99% 317.16ms
+        391027 requests in 1.00m, 69.73MB read
+        Requests/sec: 6507.18
+        Transfer/sec: 1.16MB
+        平均每个请求 15-30ms 处理完毕
+
     3、metrics性能分析
         http://localhost:2338/metrics
 
