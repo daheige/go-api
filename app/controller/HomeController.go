@@ -41,6 +41,18 @@ func (ctrl *HomeController) Info(ctx *gin.Context) {
 	})
 }
 
+func (ctrl *HomeController) GetInfo(ctx *gin.Context) {
+	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
+		"code":    0,
+		"message": "ok",
+		"data": map[string]interface{}{
+			"id":   1,
+			"name": "heige",
+			"sex":  1,
+		},
+	})
+}
+
 func (ctrl *HomeController) GetData(ctx *gin.Context) {
 	homeLogic := logic.HomeLogic{}
 	homeLogic.SetCtx(ctx)

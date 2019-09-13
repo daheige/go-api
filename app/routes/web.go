@@ -50,4 +50,7 @@ func WebRoute(router *gin.Engine) {
 	v1.POST("/data", homeCtrl.PostData)
 
 	router.GET("/long-async", homeCtrl.LongAsync)
+
+	//压力测试/api/info接口
+	router.GET("/api/info", homeCtrl.GetInfo)
 }
