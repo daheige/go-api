@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/daheige/thinkgo/httpRequest"
+	httpRequest "github.com/daheige/thinkgo/gResty"
 	"github.com/pkg/profile"
 )
 
