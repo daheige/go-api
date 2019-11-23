@@ -64,9 +64,11 @@ func (ware *LogWare) Recover() gin.HandlerFunc {
 				var brokenPipe bool
 				if ne, ok := err.(*net.OpError); ok {
 					if se, ok := ne.Err.(*os.SyscallError); ok {
-						errMsg := strings.ToLower(se.Error())
 
-						if strings.Contains(errMsg, "broken pipe") || strings.Contains(errMsg, "connection reset by peer") {
+						errMsg := strings.ToLower(se.Error())
+						if strings.Contains(errMsg, "broken pipe") ||
+							strings.Contains(errMsg, "connection reset by peer") ||
+							strings.Contains(errMsg, "i/o timeout") {
 							brokenPipe = true
 						}
 					}
