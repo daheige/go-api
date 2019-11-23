@@ -2,6 +2,9 @@ package middleware
 
 import (
 	"go-api/app/extensions/Logger"
+	"net"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/daheige/thinkgo/common"
@@ -55,6 +58,31 @@ func (ware *LogWare) Recover() gin.HandlerFunc {
 					"trace_error": err,
 					"trace_info":  string(common.CatchStack()),
 				})
+
+				// Check for a broken connection, as it is not really a
+				// condition that warrants a panic stack trace.
+				var brokenPipe bool
+				if ne, ok := err.(*net.OpError); ok {
+					if se, ok := ne.Err.(*os.SyscallError); ok {
+						if strings.Contains(strings.ToLower(se.Error()), "broken pipe") || strings.Contains(strings.ToLower(se.Error()), "connection reset by peer") {
+							brokenPipe = true
+						}
+					}
+				}
+
+				// 是否是 brokenPipe类型的错误
+				// 如果是该类型的错误，就不需要返回任何数据给客户端
+				// 代码参考gin recovery.go RecoveryWithWriter方法实现
+				// If the connection is dead, we can't write a status to it.
+				if brokenPipe {
+
+					// you can do this
+					// ctx.Error(err.(error)) // nolint: errcheck
+					// ctx.Abort()
+
+					//can also handle this
+					return
+				}
 
 				//响应状态
 				ctx.AbortWithStatusJSON(500, gin.H{
