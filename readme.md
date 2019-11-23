@@ -244,7 +244,33 @@
         在中间件中进行捕获了，但这样又会影响别的接口情况，导致一些接口响应时间边长
         所以对于比较重要的业务，尽量不要抛出panic,同时需要做好panic/recover捕获
         一般放在中间件中处理就可以。
-       
+        
+        在中间件中，捕获broken pipe或者connection reset by peer 异常的时候
+        再进行压力测试
+        $ wrk -t 8  -c 4000 -d 2m --timeout 2 --latency http://localhost:1338/v1/hello
+        Running 2m test @ http://localhost:1338/v1/hello
+          8 threads and 4000 connections
+          Thread Stats   Avg      Stdev     Max   +/- Stdev
+            Latency   704.77ms  291.33ms   1.97s    79.41%
+            Req/Sec   201.83    121.92     1.11k    77.14%
+          Latency Distribution
+             50%  768.19ms
+             75%  845.14ms
+             90%  937.91ms
+             99%    1.32s 
+          170963 requests in 2.00m, 37.49GB read
+          Socket errors: connect 2987, read 0, write 0, timeout 0
+        Requests/sec:   1423.56
+        Transfer/sec:    319.68MB
+
+# 关于 broken pipe
+
+    1）broken pipe的字面意思是“管道破裂”。broken pip的原因是该管道的读端被关闭。
+    2）broken pipe经常发生socket关闭之后（或者其他的描述符关闭之后）的write操作中。
+    3）发生broken pipe错误时，进程收到SIGPIPE信号，默认动作是进程终止。
+    4）broken pipe最直接的意思是：写入端出现的时候，另一端却休息或退出了
+      因此造成没有及时取走管道中的数据，从而系统异常退出；如果不做处理，HTTP服务器会崩溃
+
 # 关于 http 超时的限制
 
     不恰当的http.Server设置，以及未设置超时处理，可能导致http net.Conn连接泄漏，从而出现太多的文件句柄

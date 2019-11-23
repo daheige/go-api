@@ -64,7 +64,9 @@ func (ware *LogWare) Recover() gin.HandlerFunc {
 				var brokenPipe bool
 				if ne, ok := err.(*net.OpError); ok {
 					if se, ok := ne.Err.(*os.SyscallError); ok {
-						if strings.Contains(strings.ToLower(se.Error()), "broken pipe") || strings.Contains(strings.ToLower(se.Error()), "connection reset by peer") {
+						errMsg := strings.ToLower(se.Error())
+
+						if strings.Contains(errMsg, "broken pipe") || strings.Contains(errMsg, "connection reset by peer") {
 							brokenPipe = true
 						}
 					}
@@ -75,12 +77,9 @@ func (ware *LogWare) Recover() gin.HandlerFunc {
 				// 代码参考gin recovery.go RecoveryWithWriter方法实现
 				// If the connection is dead, we can't write a status to it.
 				if brokenPipe {
+					ctx.Error(err.(error)) // nolint: errcheck
+					ctx.Abort()
 
-					// you can do this
-					// ctx.Error(err.(error)) // nolint: errcheck
-					// ctx.Abort()
-
-					//can also handle this
 					return
 				}
 

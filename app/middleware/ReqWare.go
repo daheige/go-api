@@ -40,6 +40,7 @@ func TimeoutHandler(timeout time.Duration) func(c *gin.Context) {
 					"code":    504,
 					"message": http.StatusText(http.StatusGatewayTimeout),
 				})
+
 			}
 		}()
 
