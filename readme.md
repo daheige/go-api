@@ -197,6 +197,54 @@
     3、metrics性能分析
         http://localhost:2338/metrics
 
+    4、测试业务(复现gin render/json.go)
+        $ wrk -t 8  -c 1000 -d 2m --timeout 2 --latency http://localhost:1338/v1/hello
+        Running 2m test @ http://localhost:1338/v1/hello
+          8 threads and 1000 connections
+          Thread Stats   Avg      Stdev     Max   +/- Stdev
+            Latency   682.21ms  240.51ms   1.91s    81.74%
+            Req/Sec   184.04     88.57   790.00     71.43%
+          Latency Distribution
+             50%  718.36ms
+             75%  787.64ms
+             90%  871.97ms
+             99%    1.19s 
+          174395 requests in 2.00m, 38.16GB read
+        Requests/sec:   1452.04
+        Transfer/sec:    325.37MB
+        发现gin框架，在抛出了panic之后，进行捕获之后，会影响cpu
+        以及接口qps
+        
+        对比一个没有业务的接口，进行压力测试：
+        $ wrk -t 8  -c 1000 -d 2m --timeout 2 --latency http://localhost:1338/
+        Running 2m test @ http://localhost:1338/
+          8 threads and 1000 connections
+          Thread Stats   Avg      Stdev     Max   +/- Stdev
+            Latency   147.25ms   83.65ms   1.03s    79.22%
+            Req/Sec     0.88k   187.68     2.82k    74.27%
+          Latency Distribution
+             50%  160.07ms
+             75%  175.74ms
+             90%  206.03ms
+             99%  402.74ms
+          833870 requests in 2.00m, 117.70MB read
+        Requests/sec:   6944.51
+        Transfer/sec:      0.98MB
+        
+        很明显qps下降了不少,由于 http://localhost:1338/v1/hello
+        出现了大量的panic操作，需要捕获堆栈信息,而堆栈信息极其消耗性能
+        追踪源码发现gin底层抛出了panic
+        panic(0xbcfbc0, 0xc000d5cb40)
+        	/usr/local/go/src/runtime/panic.go:679 +0x1b2
+        github.com/gin-gonic/gin/render.JSON.Render(...)
+        	/mygo/pkg/mod/github.com/gin-gonic/gin@v1.4.0/render/json.go:58
+        
+        详细的panic堆栈信息，见 docs/gin-render-json-panic.md
+        
+        在中间件中进行捕获了，但这样又会影响别的接口情况，导致一些接口响应时间边长
+        所以对于比较重要的业务，尽量不要抛出panic,同时需要做好panic/recover捕获
+        一般放在中间件中处理就可以。
+       
 # 关于 http 超时的限制
 
     不恰当的http.Server设置，以及未设置超时处理，可能导致http net.Conn连接泄漏，从而出现太多的文件句柄

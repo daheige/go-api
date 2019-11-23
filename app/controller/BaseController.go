@@ -1,9 +1,12 @@
 package controller
 
 import (
+	"errors"
 	"time"
 
 	"github.com/gin-gonic/gin"
+
+	"go-api/app/extensions/Logger"
 )
 
 const (
@@ -18,6 +21,12 @@ type EmptyArray []struct{}
 type BaseController struct{}
 
 func (ctrl *BaseController) ajaxReturn(ctx *gin.Context, code int, message string, data interface{}) {
+	// if err := ctrl.ClientDisconnected(ctx); err != nil {
+	// 	data = nil
+	//
+	// 	return
+	// }
+
 	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
 		"code":     code,
 		"message":  message,
@@ -41,4 +50,24 @@ func (ctrl *BaseController) Error(ctx *gin.Context, code int, message string) {
 	}
 
 	ctrl.ajaxReturn(ctx, code, message, nil)
+}
+
+func (ctrl *BaseController) ClientDisconnected(c *gin.Context) error {
+
+	// 标准上下文
+	ctx := c.Request.Context()
+
+	select {
+	// if the context is done it timed out or was cancelled
+	// so don't return anything
+	case <-ctx.Done():
+		Logger.Error(c, "client disconnected", map[string]interface{}{
+			"trace_error": ctx.Err().Error(),
+		})
+
+		return errors.New("client disconnected")
+	default:
+	}
+
+	return nil
 }

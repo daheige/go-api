@@ -3,6 +3,7 @@ package Logger
 import (
 	"go-api/app/helper"
 	"runtime"
+	"runtime/debug"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -96,7 +97,7 @@ func Recover(c interface{}) {
 			if ctx, ok := c.(*gin.Context); ok {
 				Emergency(ctx, "exec panic", map[string]interface{}{
 					"error":       err,
-					"error_trace": string(logger.Stack()),
+					"error_trace": string(debug.Stack()),
 				})
 
 				//响应状态
@@ -110,7 +111,7 @@ func Recover(c interface{}) {
 
 			logger.DPanic("exec panic", map[string]interface{}{
 				"error":       err,
-				"error_trace": string(logger.Stack()),
+				"error_trace": string(debug.Stack()),
 			})
 		}
 	}()

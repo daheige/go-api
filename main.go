@@ -16,6 +16,7 @@ import (
 	//"github.com/pkg/profile"
 
 	"github.com/daheige/thinkgo/monitor"
+	"github.com/pkg/profile"
 
 	"github.com/daheige/thinkgo/logger"
 
@@ -95,7 +96,7 @@ func main() {
 
 	//defer profile.Start(profile.MemProfile, profile.BlockProfile, profile.MutexProfile, profile.ThreadcreationProfile).Stop()
 
-	//defer profile.Start().Stop()
+	defer profile.Start().Stop()
 
 	router := gin.New()
 
@@ -117,12 +118,12 @@ func main() {
 	//对于ReadHeaderTimeout一般不建议设置，默认采用ReadTimeout
 	//详细分析: https://blog.csdn.net/busai2/article/details/82634049
 	server := &http.Server{
-		Handler: router,
-		Addr:    fmt.Sprintf("0.0.0.0:%d", port),
-		//IdleTimeout:       10 * time.Second, //tcp idle time
-		//ReadHeaderTimeout: 10 * time.Second, //read header timeout
-		ReadTimeout:  5 * time.Second,  //read request timeout
-		WriteTimeout: 10 * time.Second, //write timeout
+		Handler:           router,
+		Addr:              fmt.Sprintf("0.0.0.0:%d", port),
+		ReadHeaderTimeout: 5 * time.Second,  //read header timeout
+		ReadTimeout:       5 * time.Second,  //read request timeout
+		WriteTimeout:      10 * time.Second, //write timeout
+		IdleTimeout:       20 * time.Second, //tcp idle time
 	}
 
 	//在独立携程中运行

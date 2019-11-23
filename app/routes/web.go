@@ -4,17 +4,27 @@ import (
 	"go-api/app/controller"
 	"go-api/app/helper"
 	"go-api/app/middleware"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func WebRoute(router *gin.Engine) {
-	//访问日志中间件处理
-	logWare := &middleware.LogWare{}
+	// 心跳检测
+	router.GET("/check", func(ctx *gin.Context) {
+		ctx.String(200, `{"alive": true}`)
+	})
 
-	//对所有的请求进行性能监控，一般来说生产环境，可以对指定的接口做性能监控
-	router.Use(logWare.Access(), logWare.Recover(), helper.Monitor())
-	//router.Use(logWare.Access(), logWare.Recover())
+	//访问日志中间件和recover捕获
+	logWare := &middleware.LogWare{}
+	router.Use(logWare.Access(), logWare.Recover())
+
+	// 服务超时设置 3s超时
+	router.Use(middleware.TimeoutHandler(3 * time.Second))
+
+	// prometheus监控
+	// 对所有的请求进行性能监控，一般来说生产环境，可以对指定的接口做性能监控
+	router.Use(helper.Monitor())
 
 	router.NoRoute(middleware.NotFoundHandler())
 
@@ -23,10 +33,6 @@ func WebRoute(router *gin.Engine) {
 			"code":    0,
 			"message": "ok",
 		})
-	})
-
-	router.GET("/check", func(ctx *gin.Context) {
-		ctx.String(200, `{"alive": true}`)
 	})
 
 	homeCtrl := &controller.HomeController{}
@@ -53,4 +59,11 @@ func WebRoute(router *gin.Engine) {
 
 	//压力测试/api/info接口
 	router.GET("/api/info", homeCtrl.GetInfo)
+
+	// 压力测试map gc
+	indexCtrl := &controller.IndexController{}
+	v1.GET("/hello", indexCtrl.Hello)
+
+	//模拟panic操作
+	v1.GET("/test-panic", homeCtrl.Test)
 }
