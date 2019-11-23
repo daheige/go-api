@@ -21,6 +21,8 @@ type EmptyArray []struct{}
 type BaseController struct{}
 
 func (ctrl *BaseController) ajaxReturn(ctx *gin.Context, code int, message string, data interface{}) {
+	// 这里不建议在这里进行select判断客户端是否超时了，如果大量的请求过来select压力太大
+	// 可能会出现阻塞goroutine运行
 	// if err := ctrl.ClientDisconnected(ctx); err != nil {
 	// 	data = nil
 	//
