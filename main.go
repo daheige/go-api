@@ -16,7 +16,6 @@ import (
 	//"github.com/pkg/profile"
 
 	"github.com/daheige/thinkgo/monitor"
-	"github.com/pkg/profile"
 
 	"github.com/daheige/thinkgo/logger"
 
@@ -96,7 +95,7 @@ func main() {
 
 	//defer profile.Start(profile.MemProfile, profile.BlockProfile, profile.MutexProfile, profile.ThreadcreationProfile).Stop()
 
-	defer profile.Start().Stop()
+	// defer profile.Start().Stop()
 
 	router := gin.New()
 
