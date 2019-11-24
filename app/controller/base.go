@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"go-api/app/extensions/Logger"
+	"go-api/app/extensions/logger"
 )
 
 const (
@@ -63,7 +63,7 @@ func (ctrl *BaseController) ClientDisconnected(c *gin.Context) error {
 	// if the context is done it timed out or was cancelled
 	// so don't return anything
 	case <-ctx.Done():
-		Logger.Error(c, "client disconnected", map[string]interface{}{
+		logger.Error(c, "client disconnected", map[string]interface{}{
 			"trace_error": ctx.Err().Error(),
 		})
 

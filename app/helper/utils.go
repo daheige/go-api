@@ -10,7 +10,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-//根据ua获取设备名称
+// GetDeviceByUa 根据ua获取设备名称
 func GetDeviceByUa(ua string) string {
 	plat := "web"
 	regText := "(a|A)ndroid|dr"
@@ -28,7 +28,7 @@ func GetDeviceByUa(ua string) string {
 	return plat
 }
 
-// metrics性能监控，gin处理器函数，包装 handler function,不侵入业务逻辑
+// Monitor metrics性能监控，gin处理器函数，包装 handler function,不侵入业务逻辑
 func Monitor() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		start := time.Now()
@@ -41,4 +41,5 @@ func Monitor() gin.HandlerFunc {
 		// Histogram类型 meric的记录方式
 		monitor.WebRequestDuration.With(prometheus.Labels{"method": ctx.Request.Method, "endpoint": ctx.Request.URL.Path}).Observe(duration.Seconds())
 	}
+
 }

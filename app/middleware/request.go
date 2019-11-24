@@ -2,13 +2,14 @@ package middleware
 
 import (
 	"context"
-	"go-api/app/extensions/Logger"
+	"go-api/app/extensions/logger"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
+// NotFoundHandler 路由找不到的情况
 func NotFoundHandler() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.JSON(404, gin.H{
@@ -33,7 +34,7 @@ func TimeoutHandler(timeout time.Duration) func(c *gin.Context) {
 			if ctx.Err() == context.DeadlineExceeded {
 
 				// 记录操作日志
-				Logger.Error(c, "server timeout", nil)
+				logger.Error(c, "server timeout", nil)
 
 				// write response and abort the request
 				c.AbortWithStatusJSON(http.StatusGatewayTimeout, gin.H{

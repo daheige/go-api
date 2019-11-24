@@ -3,3 +3,8 @@ logs*
 go-api
 go-api.exe
 conf/*
+vendor/*
+pprof.cpu
+pprof.heap
+pprof.trace
+pprof.cpu*
