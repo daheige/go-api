@@ -9,6 +9,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
+// InitConf 初始化配置文件
 func InitConf(path string) {
 	conf = yamlconf.NewConf()
 	err := conf.LoadConf(path + "/app.yaml")
@@ -30,6 +31,7 @@ func InitConf(path string) {
 	dbConf.SetEngineName("default") //为每个db设置一个engine name
 }
 
+// InitRedis 初始化redis
 func InitRedis() {
 	//初始化redis
 	redisConf := &rediscache.RedisConf{}
@@ -39,7 +41,7 @@ func InitRedis() {
 	redisConf.SetRedisPool("default")
 }
 
-//从连接池中获取redis client
+// GetRedisObj 从连接池中获取redis client
 //用完就需要调用redisObj.Close()释放连接，防止过多的连接导致redis连接过多
 // 导致当前请求而陷入长久等待，从而redis崩溃
 func GetRedisObj(name string) (redis.Conn, error) {

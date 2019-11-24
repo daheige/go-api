@@ -7,24 +7,20 @@ import (
 	"go-api/app/config"
 	"log"
 	"net/http"
-	"net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	//"github.com/pkg/profile"
+	// "github.com/pkg/profile"
 
 	"github.com/daheige/thinkgo/monitor"
 
 	"github.com/daheige/thinkgo/logger"
 
-	"github.com/prometheus/client_golang/prometheus"
-
 	"go-api/app/routes"
 
 	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var port int
@@ -49,34 +45,9 @@ func init() {
 	config.InitConf(config_dir)
 	config.InitRedis()
 
-	//注册监控指标
-	prometheus.MustRegister(monitor.WebRequestTotal)
-	prometheus.MustRegister(monitor.WebRequestDuration)
-	prometheus.MustRegister(monitor.CpuTemp)
-	prometheus.MustRegister(monitor.HdFailures)
-
 	//性能监控的端口port+1000,只能在内网访问
-	go func() {
-		defer logger.Recover()
-
-		pprof_port := port + 1000
-		log.Println("server pprof run on: ", pprof_port)
-
-		httpMux := http.NewServeMux() //创建一个http ServeMux实例
-		httpMux.HandleFunc("/debug/pprof/", pprof.Index)
-		httpMux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
-		httpMux.HandleFunc("/debug/pprof/profile", pprof.Profile)
-		httpMux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
-		httpMux.HandleFunc("/debug/pprof/trace", pprof.Trace)
-		httpMux.HandleFunc("/check", HealthCheckHandler)
-
-		//metrics监控
-		httpMux.Handle("/metrics", promhttp.Handler())
-
-		if err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", pprof_port), httpMux); err != nil {
-			log.Println(err)
-		}
-	}()
+	monitor.IsWebRequest = true
+	monitor.PrometheusHandler(port + 1000)
 
 	//gin mode设置
 	switch config.AppEnv {
