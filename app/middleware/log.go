@@ -93,8 +93,6 @@ func (ware *LogWare) Recover() gin.HandlerFunc {
 				if brokenPipe {
 					ctx.Error(err.(error)) // nolint: errcheck
 					ctx.Abort()
-
-					return
 				}
 
 				//响应状态
