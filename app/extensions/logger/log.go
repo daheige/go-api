@@ -3,7 +3,6 @@ package logger
 import (
 	"context"
 	"go-api/app/helper"
-	"runtime"
 	"runtime/debug"
 	"strings"
 
@@ -21,8 +20,6 @@ import (
     "log_id":"c34a00fa-0906-2fff-b5e8-61cfcc2a19ff",
     "ua":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36",
     "plat":"web",
-    "trace_line":41,
-    "trace_file":"/web/go/go-api/app/middleware/log.go",
     "tag":"v1_hello",
     "options":null,
     "ip":"127.0.0.1"
@@ -42,8 +39,6 @@ func writeLog(ctx context.Context, levelName string, message string, options map
 
 	ua := getStringByCtx(ctx, "user_agent")
 
-	//函数调用
-	_, file, line, _ := runtime.Caller(2)
 	logInfo := map[string]interface{}{
 		"tag":            tag,
 		"request_uri":    reqUri,
@@ -53,8 +48,6 @@ func writeLog(ctx context.Context, levelName string, message string, options map
 		"ua":             ua,
 		"plat":           helper.GetDeviceByUa(ua), //当前设备匹配
 		"request_method": getStringByCtx(ctx, "request_method"),
-		"trace_line":     line,
-		"trace_file":     file,
 	}
 
 	switch levelName {
