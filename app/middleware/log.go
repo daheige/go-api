@@ -77,7 +77,9 @@ func (ware *LogWare) Recover() gin.HandlerFunc {
 
 						errMsg := strings.ToLower(se.Error())
 						if strings.Contains(errMsg, "broken pipe") ||
-							strings.Contains(errMsg, "connection reset by peer") ||
+							strings.Contains(errMsg, "reset by peer") ||
+							strings.Contains(errMsg, "request headers: small read buffer") ||
+							strings.Contains(errMsg, "unexpected EOF") ||
 							strings.Contains(errMsg, "i/o timeout") {
 							brokenPipe = true
 						}
