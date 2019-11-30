@@ -66,4 +66,8 @@ func WebRoute(router *gin.Engine) {
 
 	//模拟panic操作
 	v1.GET("/test-panic", homeCtrl.Test)
+
+	// 验证gin param validate 参数检验功能
+	// http://localhost:1338/v1/person-info?id=12&address=fefefe
+	v1.GET("/person-info", homeCtrl.ValidData)
 }

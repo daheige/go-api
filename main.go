@@ -14,9 +14,11 @@ import (
 
 	// "github.com/pkg/profile"
 
-	"github.com/daheige/thinkgo/monitor"
-
+	"github.com/daheige/thinkgo/gpprof"
 	"github.com/daheige/thinkgo/logger"
+	"github.com/daheige/thinkgo/monitor"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"go-api/app/routes"
 
@@ -45,9 +47,19 @@ func init() {
 	config.InitConf(config_dir)
 	config.InitRedis()
 
+	// 添加prometheus性能监控指标
+	prometheus.MustRegister(monitor.WebRequestTotal)
+	prometheus.MustRegister(monitor.WebRequestDuration)
+
+	prometheus.MustRegister(monitor.CpuTemp)
+	prometheus.MustRegister(monitor.HdFailures)
+
 	//性能监控的端口port+1000,只能在内网访问
-	monitor.IsWebRequest = true
-	monitor.PrometheusHandler(port + 1000)
+	httpMux := gpprof.New()
+
+	//添加prometheus metrics处理器
+	httpMux.Handle("/metrics", promhttp.Handler())
+	gpprof.Run(httpMux, port+1000)
 
 	//gin mode设置
 	switch config.AppEnv {

@@ -12,14 +12,27 @@
     │   └── routes      路由层设置
     ├── app.yaml        配置文件
     ├── config          配置文件设置
-    │   └── bootstartp.go
     ├── go.mod          go.mod
     ├── go.sum
     ├── LICENSE
     ├── logs            日志目录，可以自定义到别的路径中
-    │   └── app.2019-05-06.log
     ├── main.go         程序入口文件
 
+# 关于gin validate参数校验
+
+    gin1.5.0+ 基于gopkg.in/go-playground/validator.v9封装之后
+    将validator库的validate tag改成了binding方便gin使用
+    
+    参考手册：
+        https://github.com/go-playground/validator/tree/v9
+        https://godoc.org/github.com/go-playground/validator
+        https://github.com/go-playground/validator/blob/master/_examples/simple/main.go
+        
+# gin使用手册
+    
+    参考 https://github.com/gin-gonic/gin
+    中文翻译: https://github.com/daheige/gin-doc-cn 如果有更新，以官网为准
+              
 # golang 环境安装
 
     golang下载地址:

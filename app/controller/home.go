@@ -132,3 +132,27 @@ func (ctrl *HomeController) LongAsync(ctx *gin.Context) {
 		"message": "ok",
 	})
 }
+
+type Person struct {
+	Id      int64  `form:"id" binding:"required,min=1"`
+	Name    string `form:"name" binding:"omitempty"` //可选参数
+	Address string `form:"address" binding:"required"`
+}
+
+// ValidData 测试gin(1.5.0+) binding功能
+// http://localhost:1338/v1/person-info?id=0&address=fefefe 参数错误
+// http://localhost:1338/v1/person-info?id=12&address=fefefe 参数符合预期
+func (ctrl *HomeController) ValidData(ctx *gin.Context) {
+	p := &Person{}
+	if err := ctx.ShouldBind(p); err != nil {
+		log.Println("error: ", err)
+
+		ctrl.Error(ctx, 500, "param error")
+		return
+	}
+
+	log.Println("id: ", p.Id)
+	log.Println("name: ", p.Name, "address: ", p.Address)
+
+	ctrl.Success(ctx, "ok", p)
+}
