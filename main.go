@@ -87,7 +87,7 @@ func main() {
 	//加载路由文件中的路由
 	routes.WebRoute(router)
 
-	//服务server设置
+	// 服务server设置
 	// IdleTimeout is the maximum amount of time to wait for the
 	// next request when keep-alives are enabled. If IdleTimeout
 	// is zero, the value of ReadTimeout is used. If both are

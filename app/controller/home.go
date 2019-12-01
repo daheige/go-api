@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"go-api/app/extensions/logger"
 	"go-api/app/logic"
 	"log"
 	"time"
@@ -16,6 +17,9 @@ type HomeController struct {
 
 // action
 func (ctrl *HomeController) Index(ctx *gin.Context) {
+
+	logger.Info(ctx.Request.Context(), "1234fe", nil)
+
 	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
 		"code":    200,
 		"message": "ok",
