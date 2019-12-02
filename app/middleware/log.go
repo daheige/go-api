@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net"
 	"os"
 	"strings"
@@ -64,9 +65,10 @@ func (ware *LogWare) Recover() gin.HandlerFunc {
 		defer func() {
 			if err := recover(); err != nil {
 				//log.Printf("error:%v", err)
-				logger.Emergency(ctx.Request.Context(), "exec panic", map[string]interface{}{
-					"trace_error": err,
-					"trace_info":  string(grecover.CatchStack()),
+				c := ctx.Request.Context()
+				logger.Emergency(c, "exec panic", map[string]interface{}{
+					"trace_error": fmt.Sprintf("%v", err),
+					"full_stack":  string(grecover.CatchStack()),
 				})
 
 				// Check for a broken connection, as it is not really a
@@ -76,6 +78,12 @@ func (ware *LogWare) Recover() gin.HandlerFunc {
 					if se, ok := ne.Err.(*os.SyscallError); ok {
 
 						errMsg := strings.ToLower(se.Error())
+
+						// 记录操作日志
+						logger.Error(c, "os syscall error", map[string]interface{}{
+							"trace_error": errMsg,
+						})
+
 						if strings.Contains(errMsg, "broken pipe") ||
 							strings.Contains(errMsg, "reset by peer") ||
 							strings.Contains(errMsg, "request headers: small read buffer") ||
