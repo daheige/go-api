@@ -108,8 +108,6 @@ func (ware *LogWare) Recover() gin.HandlerFunc {
 					"code":    500,
 					"message": "server error",
 				})
-
-				return
 			}
 		}()
 
