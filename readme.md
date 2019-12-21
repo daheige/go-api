@@ -116,11 +116,14 @@
 # docker 运行
 
     1.构建golang二进制文件
-        $ sh bin/app-build
+        $ sh bin/app-build.sh
+
     2.构建docker镜像
         $ docker build -t go-api:v1 .
+
     3.运行docker容器
         $ docker run -it -d -p 1338:1338 --name=go-api-server -v /web/go/go-api/logs:/go/logs go-api:v1
+        
     4.访问localhost:1338，查看页面
 
     可以通过以下方式运行
