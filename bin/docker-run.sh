@@ -11,9 +11,9 @@ if [ -z $version ];then
     version=v1
 fi
 
-#构建镜像
-sh $root_dir/bin/docker-build.sh $version
-echo "构建image完成"
+# 构建镜像
+# sh $root_dir/bin/docker-build.sh $version
+# echo "构建image完成"
 
 #docker容器name名称
 containerName=$2
@@ -25,9 +25,10 @@ fi
 mkdir -p $workdir/www/go-api
 mkdir -p $workdir/logs/go-api
 chmod 755 $workdir/logs/go-api
+#cp $root_dir/app.yaml $workdir/www/go-api
 
-# 开发环境可以打开注释，线上可根据实际情况更改
-cp $root_dir/app.yaml $workdir/www/go-api
+#开发环境可以打开注释，线上可根据实际情况更改
+#cp $root_dir/app.yaml $workdir/www/go-api
 
 #停止之前的容器
 cnt=`docker container ls -a | grep $containerName | grep -v grep | wc -l`

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/gomodule/redigo/redis"
 	"go-api/app/extensions/logger"
 	"go-api/app/logic"
 	"log"
@@ -105,11 +106,10 @@ func (ctrl *HomeController) PostData(ctx *gin.Context) {
 	})
 }
 
-// SetData 模拟redis数据设置
-func (ctrl *HomeController) SetData(ctx *gin.Context) {
+// GetUser 模拟redis数据设置和获取
+func (ctrl *HomeController) GetUser(ctx *gin.Context) {
 	redisObj, err := config.GetRedisObj("default")
 	if err != nil {
-		log.Println(err)
 		ctx.JSON(200, gin.H{
 			"code":    500,
 			"message": "redis connection error",
@@ -118,10 +118,32 @@ func (ctrl *HomeController) SetData(ctx *gin.Context) {
 		return
 	}
 
-	//用完就需要释放连接，防止过多的连接导致redis连接过多而陷入长久等待，从而redis崩溃
+	// 用完就需要释放连接，防止过多的连接导致redis连接过多而陷入长久等待，从而redis崩溃
 	defer redisObj.Close()
 
-	_, err = redisObj.Do("set", "myname", "daheige")
+	str, err := redis.String(redisObj.Do("get", "myname"))
+	if err != nil && err != redis.ErrNil {
+		ctx.JSON(200, gin.H{
+			"code":        500,
+			"message":     "redis error",
+			"trace_error": err.Error(),
+		})
+
+		return
+	}
+
+	if str != "" {
+		ctx.JSON(200, gin.H{
+			"code":     0,
+			"message":  "ok",
+			"username": str,
+		})
+
+		return
+	}
+
+	name := "daheige"
+	_, err = redisObj.Do("setex", "myname", 20, name)
 	if err != nil {
 		logger.Error(ctx.Request.Context(), "set redis error", map[string]interface{}{
 			"trace_error": err.Error(),
@@ -136,8 +158,9 @@ func (ctrl *HomeController) SetData(ctx *gin.Context) {
 	}
 
 	ctx.JSON(200, gin.H{
-		"code":    0,
-		"message": "set data success",
+		"code":     0,
+		"message":  "set data success",
+		"username": name,
 	})
 }
 

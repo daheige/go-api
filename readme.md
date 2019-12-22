@@ -93,27 +93,7 @@
     go run main.go
     访问localhost:1338
 
-# 线上部署
-
-    方法1：
-        请用supervior启动二进制文件，参考go-api.ini文件
-    方法2：
-        采用docker运行二进制文件
-
-# 关于 redisgo 调优
-
-    区分两种使用场景：
-    1.高频调用的场景，需要尽量压榨redis的性能：
-        调高MaxIdle的大小，该数目小于maxActive，由于作为一个缓冲区一样的存在
-        扩大缓冲区自然没有问题，调高MaxActive，考虑到服务端的支持上限，尽量调高
-        IdleTimeout由于是高频使用场景，设置短一点也无所谓，需要注意的一点是MaxIdle
-        设置的长了队列中的过期连接可能会增多，这个时候IdleTimeout也要相应变化
-    2.低频调用的场景，调用量远未达到redis的负载，稳定性为重：
-        MaxIdle可以设置的小一些
-        IdleTimeout相应地设置小一些
-        MaxActive随意，够用就好，容易检测到异常
-
-# docker 运行
+# 采用docker运行
 
     1.构建golang二进制文件
         $ sh bin/app-build.sh
@@ -124,16 +104,23 @@
     3.运行docker容器
     sudo mkdir -p $HOME/logs/go-api
     sudo mkdir -p $HOME/www/go-api
-
-    sudo cp app.yaml $HOME/www/go-api
     sudo chmod -R 755 $HOME/logs/go-api
-
-    docker run -it -d -p 1336:1338 -p 2338:2338 -v /data/logs/go-api:/go/logs -v /data/www/go-api:/go/conf go-api:v1
+    sudo cp app.yaml $HOME/www/go-api
+    
+    docker run -it -d -p 1336:1338 -p 2338:2338 -v $HOME/logs/go-api:/go/logs -v $HOME/www/go-api:/go/conf go-api:v1
 
     4.访问localhost:1338，查看页面
 
-    性能监控
-        浏览器访问http://localhost:2338/debug/pprof，就可以查看
+# 线上部署
+
+    方法1：
+        请用supervior启动二进制文件，参考go-api.ini文件
+    方法2：
+        采用docker运行二进制文件
+
+# 性能监控
+    
+    浏览器访问http://localhost:2338/debug/pprof，就可以查看
     在命令终端查看：
         查看profile
             go tool pprof http://localhost:2338/debug/pprof/profile?seconds=60
@@ -161,10 +148,14 @@
         prometheus性能监控
         http://localhost:2338/metrics
 
+# 关于压力测试
+    
+    基于单个实例（容器实例也是单个）情况下，进行压力测试
+    
 # wrk 工具压力测试
 
     https://github.com/wg/wrk
-
+    
     ubuntu系统安装如下
     1、安装wrk
         # 安装 make 工具
@@ -299,6 +290,38 @@
     Requests/sec:   7809.62
     Transfer/sec:      1.12MB
 
+# redis压力测试
+
+    $ wrk -t 12 -d 2m -c 500 --timeout 2 --latency http://localhost:1338/v1/get-user
+    Running 2m test @ http://localhost:1338/v1/get-user
+      12 threads and 500 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency   151.57ms   78.84ms 923.05ms   75.99%
+        Req/Sec   277.86    125.72     1.36k    66.97%
+      Latency Distribution
+         50%  135.57ms
+         75%  188.01ms
+         90%  252.22ms
+         99%  420.65ms
+      395701 requests in 2.00m, 64.15MB read
+    Requests/sec:   3294.77
+    Transfer/sec:    546.99KB
+    设置2s超时，12个线程，请求2m,连接数500并发请求，平均每秒3294
+    其中99% 的请求420ms,75%的请求188ms
+    
+# 关于 redisgo 调优
+
+    区分两种使用场景：
+    1.高频调用的场景，需要尽量压榨redis的性能：
+        调高MaxIdle的大小，该数目小于maxActive，由于作为一个缓冲区一样的存在
+        扩大缓冲区自然没有问题，调高MaxActive，考虑到服务端的支持上限，尽量调高
+        IdleTimeout由于是高频使用场景，设置短一点也无所谓，需要注意的一点是MaxIdle
+        设置的长了队列中的过期连接可能会增多，这个时候IdleTimeout也要相应变化
+    2.低频调用的场景，调用量远未达到redis的负载，稳定性为重：
+        MaxIdle可以设置的小一些
+        IdleTimeout相应地设置小一些
+        MaxActive随意，够用就好，容易检测到异常
+
 # db 压力测试
 
     $ cd mytest
@@ -414,6 +437,27 @@
     Requests/sec:   1785.47
     Transfer/sec:    299.90KB
 
+# db查询测试
+  
+    设置docker容器中,db最大连接数1000,mysql服务器最大连接数2000的情况下，进行压力测试
+
+    $ wrk -t 12 -d 2m -c 500 --timeout 2 --latency http://localhost:1338/v1/get-data?name=heige
+    Running 2m test @ http://localhost:1338/v1/get-data?name=heige
+    12 threads and 500 connections
+    Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency   257.75ms  142.31ms   1.71s    81.11%
+        Req/Sec   168.28     82.06   450.00     66.01%
+    Latency Distribution
+        50%  224.36ms
+        75%  305.08ms
+        90%  421.21ms
+        99%  804.91ms
+    237317 requests in 2.00m, 42.78MB read
+    Requests/sec:   1976.11
+    Transfer/sec:    364.73KB
+    平均每秒 1976个请求，请求的过程中发现goroutine突然大量上涨到1300多，请求结束后,又下降到70个
+    期间没有发生goroutine，内存泄露等
+
 # 查看机器的 cpu，核数
 
     CPU总核数 = 物理CPU个数 * 每颗物理CPU的核数
@@ -443,7 +487,7 @@
     %Cpu(s): 71.2 us, 20.4 sy,  0.0 ni,  4.0 id,  0.0 wa,  0.0 hi,  4.4 si,  0.0 st
     KiB Mem :  8110128 total,   149228 free,  5636640 used,  2324260 buff/cache
     KiB Swap:   998396 total,   848400 free,   149996 used.  1618124 avail Mem
-
+    
 # 采用 profile 库查看 pprof 性能指标
 
     import "github.com/pkg/profile"

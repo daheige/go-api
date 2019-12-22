@@ -51,7 +51,7 @@ func WebRoute(router *gin.Engine) {
 	// http://localhost:1338/v1/get-data?name=daheige
 	v1.GET("/get-data", homeCtrl.GetData)
 
-	v1.GET("/set-redis-data", homeCtrl.SetData)
+	v1.GET("/get-user", homeCtrl.GetUser)
 
 	v1.POST("/post-data", homeCtrl.PostData)
 
