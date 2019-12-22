@@ -122,17 +122,15 @@
         $ docker build -t go-api:v1 .
 
     3.运行docker容器
-        $ docker run -it -d -p 1338:1338 -p 2338:2338 --name=go-api-server -v /web/go/go-api/logs:/go/logs go-api:v1
-        
-    4.访问localhost:1338，查看页面
+    sudo mkdir -p $HOME/logs/go-api
+    sudo mkdir -p $HOME/www/go-api
 
-    可以通过以下方式运行
-    sudo mkdir -p /data/www/go-api/logs
-    sudo mkdir -p /data/www/go-api/conf
-    sudo cp app.yaml /data/www/go-api/conf/
-    sudo chown -R $USER /data/www/go-api/
-    docker run -it -d -p 1336:1338 -v /data/www/go-api/logs:/go/logs -v /data/www/go-api/conf:/go/conf go-api:v1
-    这样就可以在任意目录中运行docker容器
+    sudo cp app.yaml $HOME/www/go-api
+    sudo chmod -R 755 $HOME/logs/go-api
+
+    docker run -it -d -p 1336:1338 -p 2338:2338 -v /data/logs/go-api:/go/logs -v /data/www/go-api:/go/conf go-api:v1
+
+    4.访问localhost:1338，查看页面
 
     性能监控
         浏览器访问http://localhost:2338/debug/pprof，就可以查看
