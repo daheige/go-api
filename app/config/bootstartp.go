@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-
 	"github.com/daheige/thinkgo/rediscache"
 	"github.com/daheige/thinkgo/yamlconf"
 

@@ -48,12 +48,12 @@ func WebRoute(router *gin.Engine) {
 	// http://localhost:1338/v1/info/123
 	v1.GET("/info/:id", homeCtrl.Info)
 
-	//http://localhost:1338/v1/data?id=456
-	v1.GET("/data", homeCtrl.GetData)
+	// http://localhost:1338/v1/get-data?name=daheige
+	v1.GET("/get-data", homeCtrl.GetData)
 
-	v1.GET("/set-data", homeCtrl.SetData)
+	v1.GET("/set-redis-data", homeCtrl.SetData)
 
-	v1.POST("/data", homeCtrl.PostData)
+	v1.POST("/post-data", homeCtrl.PostData)
 
 	router.GET("/long-async", homeCtrl.LongAsync)
 

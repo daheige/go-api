@@ -1,39 +1,37 @@
 package logic
 
 import (
-	"go-api/app/model"
-	"log"
-
+	"errors"
 	"github.com/daheige/thinkgo/mysql"
+	"github.com/jinzhu/gorm"
+	"go-api/app/model"
 )
 
 type HomeLogic struct {
 	BaseLogic
 }
 
-func (h *HomeLogic) GetData(id string) []string {
-	log.Println(h.Ctx.GetString("current_uid"))
-
+// GetData 模拟数据库查询
+func (h *HomeLogic) GetData(name string) (map[string]interface{}, error) {
 	db, err := mysql.GetDbObj("default")
 	if err != nil {
-		log.Println("db connection error: ", err)
-		return nil
+		//log.Println("db connection error: ", err)
+		return nil, errors.New("db connection error")
 	}
 
 	user := &model.User{}
-	db.Where("name = ?", "hello").First(user)
-	log.Println("user: ", user)
-
-	if id == "1234" {
-		return []string{
-			"js",
-			"php",
-			user.Name,
+	err = db.Where("name = ?", name).First(user).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
 		}
+
+		return nil, err
 	}
 
-	return []string{
-		"golang",
-		"php",
-	}
+	//log.Println("user: ", user)
+
+	return map[string]interface{}{
+		"user": user,
+	}, nil
 }

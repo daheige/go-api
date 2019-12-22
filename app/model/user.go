@@ -12,8 +12,8 @@ package model
    Query OK, 1 row affected (0.04 sec)
 */
 type User struct {
-	ID   uint   `gorm:"primary_key"`
-	Name string `gorm:"type:varchar(200)"`
+	ID   uint   `json:"id" gorm:"primary_key"`
+	Name string `json:"name" gorm:"type:varchar(200)"`
 }
 
 func (User) TableName() string {

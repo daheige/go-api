@@ -57,12 +57,30 @@ func (ctrl *HomeController) GetInfo(ctx *gin.Context) {
 	})
 }
 
+// GetData 模拟数据库查询数据
 func (ctrl *HomeController) GetData(ctx *gin.Context) {
-	homeLogic := logic.HomeLogic{}
+	homeLogic := &logic.HomeLogic{}
 	homeLogic.SetCtx(ctx)
-	id := ctx.DefaultQuery("id", "hello")
+	name := ctx.DefaultQuery("name", "hello")
 
-	data := homeLogic.GetData(id)
+	if name == "" {
+		ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
+			"code":    500,
+			"message": "name is empty",
+		})
+
+		return
+	}
+
+	data, err := homeLogic.GetData(name)
+	if err != nil {
+		ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
+			"code":    500,
+			"message": "get user fail: " + err.Error(),
+		})
+
+		return
+	}
 
 	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
 		"code":    0,
@@ -71,13 +89,14 @@ func (ctrl *HomeController) GetData(ctx *gin.Context) {
 	})
 }
 
+// PostData 模拟post数据
 func (ctrl *HomeController) PostData(ctx *gin.Context) {
-	homeLogic := logic.HomeLogic{}
+	homeLogic := &logic.HomeLogic{}
 	homeLogic.SetCtx(ctx)
-	id := ctx.DefaultPostForm("id", "hello")
+	name := ctx.DefaultPostForm("name", "hello")
 
-	log.Println("id: ", id)
-	data := homeLogic.GetData(id)
+	data, err := homeLogic.GetData(name)
+	log.Println("err: ", err)
 
 	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
 		"code":    0,
@@ -86,6 +105,7 @@ func (ctrl *HomeController) PostData(ctx *gin.Context) {
 	})
 }
 
+// SetData 模拟redis数据设置
 func (ctrl *HomeController) SetData(ctx *gin.Context) {
 	redisObj, err := config.GetRedisObj("default")
 	if err != nil {
@@ -103,6 +123,10 @@ func (ctrl *HomeController) SetData(ctx *gin.Context) {
 
 	_, err = redisObj.Do("set", "myname", "daheige")
 	if err != nil {
+		logger.Error(ctx.Request.Context(), "set redis error", map[string]interface{}{
+			"trace_error": err.Error(),
+		})
+
 		ctx.JSON(200, gin.H{
 			"code":    500,
 			"message": "set data error",
@@ -117,7 +141,7 @@ func (ctrl *HomeController) SetData(ctx *gin.Context) {
 	})
 }
 
-// When starting new Goroutines inside a middleware or handler,
+// LongAsync When starting new Goroutines inside a middleware or handler,
 // you SHOULD NOT use the original context inside it,
 // you have to use a read-only copy.
 func (ctrl *HomeController) LongAsync(ctx *gin.Context) {
