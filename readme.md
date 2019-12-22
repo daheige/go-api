@@ -122,7 +122,7 @@
         $ docker build -t go-api:v1 .
 
     3.运行docker容器
-        $ docker run -it -d -p 1338:1338 --name=go-api-server -v /web/go/go-api/logs:/go/logs go-api:v1
+        $ docker run -it -d -p 1338:1338 -p 2338:2338 --name=go-api-server -v /web/go/go-api/logs:/go/logs go-api:v1
         
     4.访问localhost:1338，查看页面
 
