@@ -75,6 +75,8 @@
     export GOPROXY=https://goproxy.io,direct
     或者
     export GOPROXY=https://goproxy.cn,direct
+    或者
+    export GOPROXY=https://goproxy.cn,https://mirrors.aliyun.com/goproxy/,direct
 
     让bashrc生效
     source ~/.bashrc
