@@ -1,0 +1,16 @@
+readme.md
+.git
+mytest
+logs
+bin/*
+docs/*
+.gitignore
+app.yaml
+go-api
+go-api.ini
+LICENSE
+readme.md
+*.md
+*.log
+*.yaml
+*.sh

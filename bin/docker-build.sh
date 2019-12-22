@@ -2,18 +2,6 @@
 #编译golang可执行文件
 root_dir=$(cd "$(dirname "$0")"; cd ..; pwd)
 
-goExecPath=`which go`
-if [ -z $goExecPath ];then
-    echo "请先安装golang1.12.5+版本，再运行"
-fi
-
-export GO111MODULE=auto
-
-#禁用cgo模块
-export CGO_ENABLED=0
-cd $root_dir
-$goExecPath build -a -installsuffix cgo -o go-api
-
 #docker image版本
 version=$1
 if [ -z $version ];then
