@@ -23,6 +23,8 @@ import (
 	"go-api/app/routes"
 
 	"github.com/gin-gonic/gin"
+
+	_ "go.uber.org/automaxprocs"
 )
 
 var port int

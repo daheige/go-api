@@ -9,4 +9,5 @@ require (
 	github.com/jinzhu/gorm v1.9.12
 	github.com/pkg/profile v1.4.0
 	github.com/prometheus/client_golang v1.5.1
+	go.uber.org/automaxprocs v1.3.0
 )
