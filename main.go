@@ -26,19 +26,19 @@ import (
 )
 
 var port int
-var log_dir string
-var config_dir string
+var logDir string
+var configDir string
 var wait time.Duration //平滑重启的等待时间1s or 1m
 
 func init() {
 	flag.IntVar(&port, "port", 1338, "app listen port")
-	flag.StringVar(&log_dir, "log_dir", "./logs", "log dir")
-	flag.StringVar(&config_dir, "config_dir", "./", "config dir")
+	flag.StringVar(&logDir, "log_dir", "./logs", "log dir")
+	flag.StringVar(&configDir, "config_dir", "./", "config dir")
 	flag.DurationVar(&wait, "graceful-timeout", 3*time.Second, "the server gracefully reload. eg: 15s or 1m")
 	flag.Parse()
 
 	//日志文件设置
-	logger.SetLogDir(log_dir)
+	logger.SetLogDir(logDir)
 	logger.SetLogFile("go-api.log")
 	logger.MaxSize(500)
 
@@ -46,7 +46,7 @@ func init() {
 	logger.InitLogger(3)
 
 	//初始化配置文件
-	config.InitConf(config_dir)
+	config.InitConf(configDir)
 	config.InitRedis()
 
 	// 添加prometheus性能监控指标
@@ -127,8 +127,10 @@ func main() {
 	// We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C)
 	// recivie signal to exit main goroutine
 	// window signal
-	// signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, syscall.SIGHUP)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR2, os.Interrupt, syscall.SIGHUP)
+	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, syscall.SIGHUP)
+
+	// linux signal if you use linux on production,please use this code.
+	// signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR2, os.Interrupt, syscall.SIGHUP)
 
 	// Block until we receive our signal.
 	sig := <-ch
@@ -147,14 +149,4 @@ func main() {
 	<-ctx.Done()
 
 	log.Println("shutting down")
-}
-
-func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	// A very simple health check.
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-
-	// In the future we could report back on the status of our DB, or our cache
-	// (e.g. Redis) by performing a simple PING, and include them in the response.
-	w.Write([]byte(`{"alive": true}`))
 }
