@@ -20,7 +20,7 @@
 
 # 关于gin validate参数校验
 
-    gin1.5.0+ 基于gopkg.in/go-playground/validator.v9封装之后
+    gin1.6.x+ 基于gopkg.in/go-playground/validator.v10封装之后
     将validator库的validate tag改成了binding方便gin使用
     
     参考手册：
@@ -36,14 +36,14 @@
 # golang 环境安装
 
     golang下载地址:
-        https://golang.google.cn/dl/
+       https://golang.google.cn/dl/
 
-    以go最新版本go1.13版本为例
-    https://dl.google.com/go/go1.13.linux-amd64.tar.gz
-    1、linux环境，下载go1.12.8.linux-amd64.tar.gz
+    以go最新版本go1.14版本为例
+    https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+    1、linux环境，下载
         cd /usr/local/
-        sudo wget https://dl.google.com/go/go1.13.linux-amd64.tar.gz
-        sudo tar zxvf go1.13.linux-amd64.tar.gz
+        sudo wget https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+        sudo tar zxvf go1.14.1.linux-amd64.tar.gz
         创建golang需要的目录
         sudo mkdir /mygo
         sudo mkdir /mygo/bin
@@ -58,7 +58,7 @@
         export GOBIN=$GOPATH/bin
         export GOPKG=$GOPATH/pkg
         #开启go mod机制
-        export GO111MODULE=auto
+        export GO111MODULE=on
 
         #禁用cgo模块
         export CGO_ENABLED=0
