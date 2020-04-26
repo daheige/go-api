@@ -1,5 +1,5 @@
 # 编译go-api阶段
-FROM golang:1.13.5 AS go-builder
+FROM golang:1.13.10 AS go-builder
 
 # 设置golang环境变量和禁用CGO,开启go mod机制
 # 禁用cgo模块
