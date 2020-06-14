@@ -98,9 +98,11 @@ func (ware *LogWare) Recover() gin.HandlerFunc {
 				// 如果是该类型的错误，就不需要返回任何数据给客户端
 				// 代码参考gin recovery.go RecoveryWithWriter方法实现
 				// If the connection is dead, we can't write a status to it.
+				// if broken pipe,return nothing.
 				if brokenPipe {
-					ctx.Error(err.(error)) // nolint: errcheck
+					// ctx.Error(err.(error)) // nolint: errcheck
 					ctx.Abort()
+					return
 				}
 
 				//响应状态
