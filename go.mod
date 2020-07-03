@@ -3,7 +3,7 @@ module go-api
 go 1.14
 
 require (
-	github.com/daheige/thinkgo v1.10.2
+	github.com/daheige/thinkgo v1.10.4
 	github.com/gin-gonic/gin v1.6.3
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/jinzhu/gorm v1.9.12
