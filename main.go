@@ -4,13 +4,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"go-api/app/config"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"go-api/app/config"
 
 	// "github.com/pkg/profile"
 
@@ -30,7 +31,7 @@ import (
 var port int
 var logDir string
 var configDir string
-var wait time.Duration //平滑重启的等待时间1s or 1m
+var wait time.Duration // 平滑重启的等待时间1s or 1m
 
 func init() {
 	flag.IntVar(&port, "port", 1338, "app listen port")
@@ -39,15 +40,15 @@ func init() {
 	flag.DurationVar(&wait, "graceful-timeout", 3*time.Second, "the server gracefully reload. eg: 15s or 1m")
 	flag.Parse()
 
-	//日志文件设置
+	// 日志文件设置
 	logger.SetLogDir(logDir)
 	logger.SetLogFile("go-api.log")
 	logger.MaxSize(500)
 
-	//由于app/extensions/logger基于thinkgo/logger又包装了一层，所以这里是3
+	// 由于app/extensions/logger基于thinkgo/logger又包装了一层，所以这里是3
 	logger.InitLogger(3)
 
-	//初始化配置文件
+	// 初始化配置文件
 	config.InitConf(configDir)
 	config.InitRedis()
 
@@ -58,14 +59,14 @@ func init() {
 	prometheus.MustRegister(monitor.CpuTemp)
 	prometheus.MustRegister(monitor.HdFailures)
 
-	//性能监控的端口port+1000,只能在内网访问
+	// 性能监控的端口port+1000,只能在内网访问
 	httpMux := gpprof.New()
 
-	//添加prometheus metrics处理器
+	// 添加prometheus metrics处理器
 	httpMux.Handle("/metrics", promhttp.Handler())
 	gpprof.Run(httpMux, port+1000)
 
-	//gin mode设置
+	// gin mode设置
 	switch config.AppEnv {
 	case "local", "dev":
 		gin.SetMode(gin.DebugMode)
@@ -77,16 +78,16 @@ func init() {
 }
 
 func main() {
-	//开发环境可以打开这个profile性能分析
-	//退出时候会自动采集profile性能指标
+	// 开发环境可以打开这个profile性能分析
+	// 退出时候会自动采集profile性能指标
 
-	//defer profile.Start(profile.MemProfile, profile.BlockProfile, profile.MutexProfile, profile.ThreadcreationProfile).Stop()
+	// defer profile.Start(profile.MemProfile, profile.BlockProfile, profile.MutexProfile, profile.ThreadcreationProfile).Stop()
 
 	// defer profile.Start().Stop()
 
 	router := gin.New()
 
-	//加载路由文件中的路由
+	// 加载路由文件中的路由
 	routes.WebRoute(router)
 
 	// 服务server设置
@@ -100,19 +101,19 @@ func main() {
 	// after reading the headers and the Handler can decide what
 	// is considered too slow for the body.
 
-	//对于idleTimeout一般不建议设置，如果不设置默认采用ReadTimeout
-	//对于ReadHeaderTimeout一般不建议设置，默认采用ReadTimeout
-	//详细分析: https://blog.csdn.net/busai2/article/details/82634049
+	// 对于idleTimeout一般不建议设置，如果不设置默认采用ReadTimeout
+	// 对于ReadHeaderTimeout一般不建议设置，默认采用ReadTimeout
+	// 详细分析: https://blog.csdn.net/busai2/article/details/82634049
 	server := &http.Server{
 		Handler:           router,
 		Addr:              fmt.Sprintf("0.0.0.0:%d", port),
-		ReadHeaderTimeout: 5 * time.Second,  //read header timeout
-		ReadTimeout:       5 * time.Second,  //read request timeout
-		WriteTimeout:      10 * time.Second, //write timeout
-		IdleTimeout:       20 * time.Second, //tcp idle time
+		ReadHeaderTimeout: 5 * time.Second,  // read header timeout
+		ReadTimeout:       5 * time.Second,  // read request timeout
+		WriteTimeout:      10 * time.Second, // write timeout
+		IdleTimeout:       20 * time.Second, // tcp idle time
 	}
 
-	//在独立携程中运行
+	// 在独立携程中运行
 	log.Println("server run on: ", port)
 	log.Println("server pid: ", os.Getppid())
 
@@ -120,11 +121,20 @@ func main() {
 		defer logger.Recover()
 
 		if err := server.ListenAndServe(); err != nil {
-			log.Println(err)
+			if err != http.ErrServerClosed {
+				logger.Info("server close error", map[string]interface{}{
+					"trace_error": err.Error(),
+				})
+
+				log.Println(err)
+				return
+			}
+
+			log.Println("server will exit...")
 		}
 	}()
 
-	//平滑重启
+	// 平滑重启
 	ch := make(chan os.Signal, 1)
 	// We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C)
 	// recivie signal to exit main goroutine
@@ -147,8 +157,8 @@ func main() {
 	// Optionally, you could run srv.Shutdown in a goroutine and block on
 	// if your application should wait for other services
 	// to finalize based on context cancellation.
-	go server.Shutdown(ctx) //在独立的携程中关闭服务器
+	go server.Shutdown(ctx) // 在独立的携程中关闭服务器
 	<-ctx.Done()
 
-	log.Println("shutting down")
+	log.Println("server shutting down")
 }
