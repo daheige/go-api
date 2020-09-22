@@ -105,12 +105,13 @@ func main() {
 	// 对于ReadHeaderTimeout一般不建议设置，默认采用ReadTimeout
 	// 详细分析: https://blog.csdn.net/busai2/article/details/82634049
 	server := &http.Server{
-		Handler:           router,
-		Addr:              fmt.Sprintf("0.0.0.0:%d", port),
-		ReadHeaderTimeout: 5 * time.Second,  // read header timeout
-		ReadTimeout:       5 * time.Second,  // read request timeout
-		WriteTimeout:      10 * time.Second, // write timeout
-		IdleTimeout:       20 * time.Second, // tcp idle time
+		Handler: router,
+		Addr:    fmt.Sprintf("0.0.0.0:%d", port),
+		// Good practice to set timeouts to avoid Slowloris attacks.
+		ReadTimeout:    15 * time.Second,
+		WriteTimeout:   15 * time.Second,
+		IdleTimeout:    60 * time.Second,
+		MaxHeaderBytes: 2 << 20, // header max 2MB
 	}
 
 	// 在独立携程中运行
