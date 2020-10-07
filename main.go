@@ -28,10 +28,12 @@ import (
 	_ "go.uber.org/automaxprocs"
 )
 
-var port int
-var logDir string
-var configDir string
-var wait time.Duration // 平滑重启的等待时间1s or 1m
+var (
+	port      int
+	logDir    string
+	configDir string
+	wait      time.Duration // 平滑重启的等待时间1s or 1m
+)
 
 func init() {
 	flag.IntVar(&port, "port", 1338, "app listen port")
@@ -45,8 +47,8 @@ func init() {
 	logger.SetLogFile("go-api.log")
 	logger.MaxSize(500)
 
-	// 由于app/extensions/logger基于thinkgo/logger又包装了一层，所以这里是3
-	logger.InitLogger(3)
+	// 由于app/extensions/logger基于thinkgo/logger又包装了一层，所以这里是1
+	logger.InitLogger(1)
 
 	// 初始化配置文件
 	config.InitConf(configDir)
@@ -158,7 +160,7 @@ func main() {
 	// Optionally, you could run srv.Shutdown in a goroutine and block on
 	// if your application should wait for other services
 	// to finalize based on context cancellation.
-	go server.Shutdown(ctx) // 在独立的携程中关闭服务器
+	go server.Shutdown(ctx)
 	<-ctx.Done()
 
 	log.Println("server shutting down")
