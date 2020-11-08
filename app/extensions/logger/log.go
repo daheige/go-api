@@ -2,9 +2,10 @@ package logger
 
 import (
 	"context"
-	"go-api/app/helper"
 	"runtime/debug"
 	"strings"
+
+	"github.com/daheige/go-api/app/helper"
 
 	"github.com/daheige/thinkgo/gutils"
 	"github.com/daheige/thinkgo/logger"
@@ -38,7 +39,6 @@ func writeLog(ctx context.Context, levelName string, message string, options map
 	}
 
 	ua := getStringByCtx(ctx, "user_agent")
-
 	logInfo := map[string]interface{}{
 		"tag":            tag,
 		"request_uri":    reqUri,
@@ -46,7 +46,7 @@ func writeLog(ctx context.Context, levelName string, message string, options map
 		"options":        options,
 		"ip":             getStringByCtx(ctx, "client_ip"),
 		"ua":             ua,
-		"plat":           helper.GetDeviceByUa(ua), //当前设备匹配
+		"plat":           helper.GetDeviceByUa(ua), // 当前设备匹配
 		"request_method": getStringByCtx(ctx, "request_method"),
 	}
 
@@ -70,44 +70,39 @@ func getStringByCtx(ctx context.Context, key string) string {
 	return helper.GetStringByCtx(ctx, key)
 }
 
+// Info info log.
 func Info(ctx context.Context, message string, context map[string]interface{}) {
 	writeLog(ctx, "info", message, context)
 }
 
+// Debug debug.
 func Debug(ctx context.Context, message string, context map[string]interface{}) {
 	writeLog(ctx, "debug", message, context)
 }
 
+// Warn warn log.
 func Warn(ctx context.Context, message string, context map[string]interface{}) {
 	writeLog(ctx, "warn", message, context)
 }
 
+// Error error log.
 func Error(ctx context.Context, message string, context map[string]interface{}) {
 	writeLog(ctx, "error", message, context)
 }
 
-//致命错误或panic捕获
+// Emergency致命错误或panic捕获
 func Emergency(ctx context.Context, message string, context map[string]interface{}) {
 	writeLog(ctx, "emergency", message, context)
 }
 
-//异常捕获处理
-func Recover(c interface{}) {
-	defer func() {
-		if err := recover(); err != nil {
-			if ctx, ok := c.(context.Context); ok {
-				Emergency(ctx, "exec panic", map[string]interface{}{
-					"error":       err,
-					"error_trace": string(debug.Stack()),
-				})
+// Recover 异常捕获处理
+func Recover(ctx context.Context) {
+	if err := recover(); err != nil {
+		Emergency(ctx, "exec panic", map[string]interface{}{
+			"error":       err,
+			"error_trace": string(debug.Stack()),
+		})
 
-				return
-			}
-
-			logger.DPanic("exec panic", map[string]interface{}{
-				"error":       err,
-				"error_trace": string(debug.Stack()),
-			})
-		}
-	}()
+		return
+	}
 }

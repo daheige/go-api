@@ -11,21 +11,18 @@ import (
 	"syscall"
 	"time"
 
-	"go-api/app/config"
-
+	"github.com/daheige/go-api/config"
 	// "github.com/pkg/profile"
 
 	"github.com/daheige/thinkgo/gpprof"
 	"github.com/daheige/thinkgo/logger"
 	"github.com/daheige/thinkgo/monitor"
+	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-
-	"go-api/app/routes"
-
-	"github.com/gin-gonic/gin"
-
 	_ "go.uber.org/automaxprocs"
+
+	"github.com/daheige/go-api/app/routes"
 )
 
 var (
@@ -48,7 +45,7 @@ func init() {
 	logger.MaxSize(500)
 
 	// 由于app/extensions/logger基于thinkgo/logger又包装了一层，所以这里是1
-	logger.InitLogger(1)
+	logger.InitLogger(3)
 
 	// 初始化配置文件
 	config.InitConf(configDir)

@@ -2,11 +2,14 @@ package logic
 
 import (
 	"errors"
+
+	"github.com/daheige/go-api/app/model"
+
 	"github.com/daheige/thinkgo/mysql"
 	"github.com/jinzhu/gorm"
-	"go-api/app/model"
 )
 
+// HomeLogic home logic.
 type HomeLogic struct {
 	BaseLogic
 }

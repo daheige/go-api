@@ -7,46 +7,47 @@ import (
 	"strings"
 	"time"
 
-	"go-api/app/helper"
+	"github.com/daheige/go-api/app/helper"
 
-	"go-api/app/extensions/logger"
+	"github.com/daheige/go-api/app/extensions/logger"
 
 	"github.com/daheige/thinkgo/grecover"
 	"github.com/daheige/thinkgo/gutils"
 	"github.com/gin-gonic/gin"
 )
 
+// LogWare log middleware.
 type LogWare struct{}
 
 // Access 访问日志
 func (ware *LogWare) Access() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		t := time.Now()
-		//uri := ctx.Request.RequestURI
+		// uri := ctx.Request.RequestURI
 
-		//性能分析后发现log.Println输出需要分配大量的内存空间,而且每次写入都需要枷锁处理
-		//log.Println("request before")
-		//log.Println("request uri: ", uri)
+		// 性能分析后发现log.Println输出需要分配大量的内存空间,而且每次写入都需要枷锁处理
+		// log.Println("request before")
+		// log.Println("request uri: ", uri)
 
-		//如果采用了nginx x-request-id功能，可以获得x-request-id
+		// 如果采用了nginx x-request-id功能，可以获得x-request-id
 		logId := ctx.GetHeader("X-Request-Id")
 		if logId == "" {
-			logId = gutils.RndUuid() //日志id
+			logId = gutils.RndUuid() // 日志id
 		}
 
-		//设置跟请求相关的ctx信息
+		// 设置跟请求相关的ctx信息
 		ctx.Request = helper.ContextSet(ctx.Request, "log_id", logId)
 		ctx.Request = helper.ContextSet(ctx.Request, "client_ip", ctx.ClientIP())
 		ctx.Request = helper.ContextSet(ctx.Request, "request_uri", ctx.Request.RequestURI)
 		ctx.Request = helper.ContextSet(ctx.Request, "user_agent", ctx.GetHeader("User-Agent"))
 		ctx.Request = helper.ContextSet(ctx.Request, "request_method", ctx.Request.Method)
 
-		logger.Info(ctx.Request.Context(), "exec start", nil)
+		logger.Info(ctx.Request.Context(), "exec begin", nil)
 
 		ctx.Next()
 
-		//log.Println("request end")
-		//请求结束记录日志
+		// log.Println("request end")
+		// 请求结束记录日志
 		c := map[string]interface{}{
 			"exec_time": time.Now().Sub(t).Seconds(),
 		}
@@ -64,7 +65,7 @@ func (ware *LogWare) Recover() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-				//log.Printf("error:%v", err)
+				// log.Printf("error:%v", err)
 				c := ctx.Request.Context()
 				logger.Emergency(c, "exec panic", map[string]interface{}{
 					"trace_error": fmt.Sprintf("%v", err),
@@ -105,7 +106,7 @@ func (ware *LogWare) Recover() gin.HandlerFunc {
 					return
 				}
 
-				//响应状态
+				// 响应状态
 				ctx.AbortWithStatusJSON(500, gin.H{
 					"code":    500,
 					"message": "server error",

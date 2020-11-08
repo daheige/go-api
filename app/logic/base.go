@@ -1,11 +1,15 @@
 package logic
 
-import "github.com/gin-gonic/gin"
+import (
+	"context"
+)
 
+// BaseLogic
 type BaseLogic struct {
-	Ctx *gin.Context
+	Ctx context.Context
 }
 
-func (b *BaseLogic) SetCtx(ctx *gin.Context) {
+// SetCtx set ctx
+func (b *BaseLogic) SetCtx(ctx context.Context) {
 	b.Ctx = ctx
 }

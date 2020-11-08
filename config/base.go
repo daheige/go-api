@@ -6,7 +6,10 @@ import (
 )
 
 var (
-	AppEnv   string
+	// AppEnv app_env
+	AppEnv string
+
+	// AppDebug app debug
 	AppDebug bool
 
 	conf   *yamlconf.ConfigEngine

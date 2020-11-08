@@ -1,14 +1,16 @@
 package routes
 
 import (
-	"go-api/app/controller"
-	"go-api/app/helper"
-	"go-api/app/middleware"
 	"time"
+
+	"github.com/daheige/go-api/app/controller"
+	"github.com/daheige/go-api/app/helper"
+	"github.com/daheige/go-api/app/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
+// WebRoute web router.
 func WebRoute(router *gin.Engine) {
 	// 心跳检测
 	router.GET("/check", func(ctx *gin.Context) {

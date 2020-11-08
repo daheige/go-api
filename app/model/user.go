@@ -11,11 +11,13 @@ package model
    mysql> insert into user (name) values("hello");
    Query OK, 1 row affected (0.04 sec)
 */
+// User user
 type User struct {
 	ID   uint   `json:"id" gorm:"primary_key"`
 	Name string `json:"name" gorm:"type:varchar(200)"`
 }
 
+// TableName table.
 func (User) TableName() string {
 	return "user"
 }

@@ -47,7 +47,7 @@ func InitRedis() {
 // 导致当前请求而陷入长久等待，从而redis崩溃
 func GetRedisObj(name string) (redis.Conn, error) {
 	conn := gredigo.GetRedisClient(name)
-	if conn == nil {
+	if conn == nil || conn.Err() != nil {
 		return nil, errors.New("get redis client error")
 	}
 

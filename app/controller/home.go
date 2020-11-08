@@ -1,24 +1,24 @@
 package controller
 
 import (
-	"github.com/gomodule/redigo/redis"
-	"go-api/app/extensions/logger"
-	"go-api/app/logic"
 	"log"
 	"time"
 
-	"go-api/app/config"
+	"github.com/daheige/go-api/app/extensions/logger"
+	"github.com/daheige/go-api/app/logic"
+	"github.com/daheige/go-api/config"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gomodule/redigo/redis"
 )
 
+// HomeController home ctrl.
 type HomeController struct {
 	BaseController
 }
 
-// action
+// Index action
 func (ctrl *HomeController) Index(ctx *gin.Context) {
-
 	logger.Info(ctx.Request.Context(), "1234fe", nil)
 
 	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
@@ -27,6 +27,7 @@ func (ctrl *HomeController) Index(ctx *gin.Context) {
 	})
 }
 
+// Test test action.
 func (ctrl *HomeController) Test(ctx *gin.Context) {
 	panic(11)
 
@@ -37,6 +38,7 @@ func (ctrl *HomeController) Test(ctx *gin.Context) {
 	})
 }
 
+// Info info action.
 func (ctrl *HomeController) Info(ctx *gin.Context) {
 	id := ctx.Param("id")
 	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
@@ -46,6 +48,7 @@ func (ctrl *HomeController) Info(ctx *gin.Context) {
 	})
 }
 
+// GetInfo get info.
 func (ctrl *HomeController) GetInfo(ctx *gin.Context) {
 	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
 		"code":    0,
@@ -61,7 +64,7 @@ func (ctrl *HomeController) GetInfo(ctx *gin.Context) {
 // GetData 模拟数据库查询数据
 func (ctrl *HomeController) GetData(ctx *gin.Context) {
 	homeLogic := &logic.HomeLogic{}
-	homeLogic.SetCtx(ctx)
+	homeLogic.SetCtx(ctx.Request.Context())
 	name := ctx.DefaultQuery("name", "hello")
 
 	if name == "" {
@@ -93,7 +96,7 @@ func (ctrl *HomeController) GetData(ctx *gin.Context) {
 // PostData 模拟post数据
 func (ctrl *HomeController) PostData(ctx *gin.Context) {
 	homeLogic := &logic.HomeLogic{}
-	homeLogic.SetCtx(ctx)
+	homeLogic.SetCtx(ctx.Request.Context())
 	name := ctx.DefaultPostForm("name", "hello")
 
 	data, err := homeLogic.GetData(name)
@@ -184,9 +187,10 @@ func (ctrl *HomeController) LongAsync(ctx *gin.Context) {
 	})
 }
 
+// Person person.
 type Person struct {
 	Id      int64  `form:"id" binding:"required,min=1"`
-	Name    string `form:"name" binding:"omitempty"` //可选参数
+	Name    string `form:"name" binding:"omitempty"` // 可选参数
 	Address string `form:"address" binding:"required"`
 }
 

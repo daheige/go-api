@@ -2,9 +2,10 @@ package middleware
 
 import (
 	"context"
-	"go-api/app/extensions/logger"
 	"net/http"
 	"time"
+
+	"github.com/daheige/go-api/app/extensions/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,7 +28,7 @@ func TimeoutHandler(timeout time.Duration) func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(c.Request.Context(), timeout)
 
 		defer func() {
-			//cancel to clear resources after finished
+			// cancel to clear resources after finished
 			cancel()
 
 			// check if context timeout was reached

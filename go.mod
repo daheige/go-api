@@ -1,4 +1,4 @@
-module go-api
+module github.com/daheige/go-api
 
 go 1.13
 

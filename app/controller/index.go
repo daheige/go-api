@@ -15,7 +15,7 @@ func (ctrl *IndexController) Hello(ctx *gin.Context) {
 	// log.Println(111)
 	userInfo := getUserInfo()
 
-	//模拟赋值操作
+	// 模拟赋值操作
 	info := make([]UserInfo, 0, len(userInfo))
 	for k, _ := range userInfo {
 		info = append(info, UserInfo{
@@ -26,12 +26,13 @@ func (ctrl *IndexController) Hello(ctx *gin.Context) {
 		})
 	}
 
-	//对map进行主动gc
+	// 对map进行主动gc
 	userInfo = nil
 
 	ctrl.Success(ctx, "ok", info)
 }
 
+// UserInfo user info.
 type UserInfo struct {
 	Id      int64
 	Name    string
