@@ -3,7 +3,7 @@ module github.com/daheige/go-api
 go 1.13
 
 require (
-	github.com/daheige/thinkgo v1.11.19
+	github.com/daheige/thinkgo v1.11.20
 	github.com/gin-gonic/gin v1.6.3
 	github.com/gomodule/redigo v1.8.2
 	github.com/jinzhu/gorm v1.9.16
