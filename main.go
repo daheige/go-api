@@ -44,7 +44,7 @@ func init() {
 	logger.SetLogFile("go-api.log")
 	logger.MaxSize(500)
 
-	// 由于app/extensions/logger基于thinkgo/logger又包装了一层，所以这里是1
+	// 由于app/extensions/logger基于thinkgo/logger又包装了一层，所以这里是3
 	logger.InitLogger(3)
 
 	// 初始化配置文件
