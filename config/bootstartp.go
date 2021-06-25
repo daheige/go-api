@@ -6,7 +6,6 @@ import (
 
 	"github.com/daheige/thinkgo/gredigo"
 	"github.com/daheige/thinkgo/yamlconf"
-
 	"github.com/gomodule/redigo/redis"
 )
 
@@ -26,15 +25,15 @@ func InitConf(path string) {
 		AppDebug = false
 	}
 
-	//数据库配置
+	// 数据库配置
 	conf.GetStruct("DbDefault", dbConf)
-	dbConf.SetDbPool()              //建立db连接池
-	dbConf.SetEngineName("default") //为每个db设置一个engine name
+	dbConf.SetDbPool()              // 建立db连接池
+	dbConf.SetEngineName("default") // 为每个db设置一个engine name
 }
 
 // InitRedis 初始化redis
 func InitRedis() {
-	//初始化redis
+	// 初始化redis
 	redisConf := &gredigo.RedisConf{}
 	conf.GetStruct("RedisCommon", redisConf)
 
@@ -43,7 +42,7 @@ func InitRedis() {
 }
 
 // GetRedisObj 从连接池中获取redis client
-//用完就需要调用redisObj.Close()释放连接，防止过多的连接导致redis连接过多
+// 用完就需要调用redisObj.Close()释放连接，防止过多的连接导致redis连接过多
 // 导致当前请求而陷入长久等待，从而redis崩溃
 func GetRedisObj(name string) (redis.Conn, error) {
 	conn := gredigo.GetRedisClient(name)

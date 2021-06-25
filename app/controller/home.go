@@ -7,7 +7,6 @@ import (
 	"github.com/daheige/go-api/app/extensions/logger"
 	"github.com/daheige/go-api/app/logic"
 	"github.com/daheige/go-api/config"
-
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
 )
