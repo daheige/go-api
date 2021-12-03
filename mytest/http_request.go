@@ -6,30 +6,31 @@ import (
 	"time"
 
 	httpRequest "github.com/daheige/thinkgo/gresty"
-	"github.com/pkg/profile"
+	// "github.com/pkg/profile"
 )
 
-//查看fd情况 $ lsof -p pid -i | wc -l
+// 查看fd情况 $ lsof -p pid -i | wc -l
 func main() {
-	defer profile.Start().Stop()
+	// defer profile.Start().Stop()
 
 	s := &httpRequest.Service{
 		BaseUri: "",
-		Timeout: 2 * time.Second,
+		Timeout: 2 * time.Second, // 客户端2s超时，当没有指定超时，就会一直等
 	}
 
-	opt := &httpRequest.ReqOpt{
+	opt := &httpRequest.RequestOption{
 		Data: map[string]interface{}{
-			"id": "1234",
+			"name": "hello",
 		},
 	}
 
-	res := s.Do("post", "http://localhost:1338/v1/data", opt)
+	res := s.Do("post", "http://localhost:1338/v1/post-data", opt)
 	log.Println("err: ", res.Err)
+	log.Println("http status: ", res.StatusCode)
 	log.Println("body:", res.Text())
 
-	nums := 30000
-	//每秒100个进行请求
+	nums := 1000
+	// 每秒100个进行请求
 	var wg sync.WaitGroup
 	wg.Add(nums)
 	for i := 0; i < nums; i++ {
@@ -37,7 +38,7 @@ func main() {
 		go func() {
 			defer wg.Done()
 
-			res := s.Do("post", "http://localhost:1338/v1/data", opt)
+			res := s.Do("post", "http://localhost:1338/v1/post-data", opt)
 			log.Println("err: ", res.Err)
 			log.Println("body:", res.Text())
 		}()

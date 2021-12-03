@@ -18,7 +18,7 @@ DbDefault:
     Ip: 127.0.0.1
     Port: 3306
     User: root
-    Password: "root"
+    Password: "root1234"
     Database: test
     MaxIdleConns: 60
     MaxOpenConns: 600

@@ -3,9 +3,9 @@ module github.com/daheige/go-api
 go 1.13
 
 require (
-	github.com/daheige/thinkgo v1.11.26
-	github.com/gin-gonic/gin v1.7.2
-	github.com/gomodule/redigo v1.8.3
+	github.com/daheige/thinkgo v1.12.22
+	github.com/gin-gonic/gin v1.7.4
+	github.com/gomodule/redigo v1.8.5
 	github.com/jinzhu/gorm v1.9.16
 	github.com/pkg/profile v1.6.0
 	github.com/prometheus/client_golang v1.11.0

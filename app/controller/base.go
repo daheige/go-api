@@ -10,9 +10,14 @@ import (
 )
 
 const (
-	HTTP_SUCCESS_CODE = 200
-	HTTP_ERROR_CODE   = 500
-	API_SUCCESS_CODE  = 0
+	// HttpSuccessCode http success code
+	HttpSuccessCode = 200
+
+	// HttpErrorCode http error code
+	HttpErrorCode = 500
+
+	// ApiSuccessCode api success logic code
+	ApiSuccessCode = 0
 )
 
 // EmptyArray用作空[]返回
@@ -30,7 +35,7 @@ func (ctrl *BaseController) ajaxReturn(ctx *gin.Context, code int, message strin
 	// 	return
 	// }
 
-	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
+	ctx.JSON(HttpSuccessCode, gin.H{
 		"code":     code,
 		"message":  message,
 		"data":     data,
@@ -44,13 +49,13 @@ func (ctrl *BaseController) Success(ctx *gin.Context, message string, data inter
 		message = "ok"
 	}
 
-	ctrl.ajaxReturn(ctx, API_SUCCESS_CODE, message, data)
+	ctrl.ajaxReturn(ctx, ApiSuccessCode, message, data)
 }
 
 // Error 错误处理code,message
 func (ctrl *BaseController) Error(ctx *gin.Context, code int, message string) {
 	if code <= 0 {
-		code = HTTP_ERROR_CODE
+		code = HttpErrorCode
 	}
 
 	ctrl.ajaxReturn(ctx, code, message, nil)

@@ -1,14 +1,16 @@
 package controller
 
 import (
+	"context"
 	"log"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gomodule/redigo/redis"
 
 	"github.com/daheige/go-api/app/extensions/logger"
 	"github.com/daheige/go-api/app/logic"
 	"github.com/daheige/go-api/config"
-	"github.com/gin-gonic/gin"
-	"github.com/gomodule/redigo/redis"
 )
 
 // HomeController home ctrl.
@@ -20,7 +22,7 @@ type HomeController struct {
 func (ctrl *HomeController) Index(ctx *gin.Context) {
 	logger.Info(ctx.Request.Context(), "1234fe", nil)
 
-	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
+	ctx.JSON(HttpSuccessCode, gin.H{
 		"code":    200,
 		"message": "ok",
 	})
@@ -30,7 +32,7 @@ func (ctrl *HomeController) Index(ctx *gin.Context) {
 func (ctrl *HomeController) Test(ctx *gin.Context) {
 	panic(11)
 
-	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
+	ctx.JSON(HttpSuccessCode, gin.H{
 		"code":    0,
 		"message": "ok",
 		"data":    "this is test",
@@ -40,7 +42,7 @@ func (ctrl *HomeController) Test(ctx *gin.Context) {
 // Info info action.
 func (ctrl *HomeController) Info(ctx *gin.Context) {
 	id := ctx.Param("id")
-	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
+	ctx.JSON(HttpSuccessCode, gin.H{
 		"code":    0,
 		"message": "ok",
 		"data":    "current id: " + id,
@@ -49,7 +51,7 @@ func (ctrl *HomeController) Info(ctx *gin.Context) {
 
 // GetInfo get info.
 func (ctrl *HomeController) GetInfo(ctx *gin.Context) {
-	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
+	ctx.JSON(HttpSuccessCode, gin.H{
 		"code":    0,
 		"message": "ok",
 		"data": map[string]interface{}{
@@ -67,7 +69,7 @@ func (ctrl *HomeController) GetData(ctx *gin.Context) {
 	name := ctx.DefaultQuery("name", "hello")
 
 	if name == "" {
-		ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
+		ctx.JSON(HttpSuccessCode, gin.H{
 			"code":    500,
 			"message": "name is empty",
 		})
@@ -77,7 +79,7 @@ func (ctrl *HomeController) GetData(ctx *gin.Context) {
 
 	data, err := homeLogic.GetData(name)
 	if err != nil {
-		ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
+		ctx.JSON(HttpSuccessCode, gin.H{
 			"code":    500,
 			"message": "get user fail: " + err.Error(),
 		})
@@ -85,7 +87,7 @@ func (ctrl *HomeController) GetData(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
+	ctx.JSON(HttpSuccessCode, gin.H{
 		"code":    0,
 		"message": "ok",
 		"data":    data,
@@ -93,15 +95,25 @@ func (ctrl *HomeController) GetData(ctx *gin.Context) {
 }
 
 // PostData 模拟post数据
-func (ctrl *HomeController) PostData(ctx *gin.Context) {
+func (ctrl *HomeController) PostData(c *gin.Context) {
+	ctx := c.Request.Context()
 	homeLogic := &logic.HomeLogic{}
-	homeLogic.SetCtx(ctx.Request.Context())
-	name := ctx.DefaultPostForm("name", "hello")
+	homeLogic.SetCtx(ctx)
+	name := c.DefaultPostForm("name", "hello")
 
 	data, err := homeLogic.GetData(name)
 	log.Println("err: ", err)
 
-	ctx.JSON(HTTP_SUCCESS_CODE, gin.H{
+	// 这种没有超时的ctx会导致客户端一直等待
+	// ctx = context.WithValue(context.Background(), "name", "daheige")
+
+	// 设置超时的上下文ctx,一般建议设置具有生命周期的上下文
+	ctx = context.WithValue(ctx, "name", "daheige")
+	ctx, cancel := context.WithTimeout(ctx, 50*time.Millisecond)
+	defer cancel()
+	homeLogic.AsyncDoTaskByCtx(ctx, 100) //  ctx timeout,error:  context deadline exceeded
+
+	c.JSON(HttpSuccessCode, gin.H{
 		"code":    0,
 		"message": "ok",
 		"data":    data,

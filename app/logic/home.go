@@ -1,7 +1,10 @@
 package logic
 
 import (
+	"context"
 	"errors"
+	"log"
+	"time"
 
 	"github.com/daheige/go-api/app/model"
 
@@ -18,7 +21,7 @@ type HomeLogic struct {
 func (h *HomeLogic) GetData(name string) (map[string]interface{}, error) {
 	db, err := mysql.GetDbObj("default")
 	if err != nil {
-		//log.Println("db connection error: ", err)
+		// log.Println("db connection error: ", err)
 		return nil, errors.New("db connection error")
 	}
 
@@ -32,9 +35,32 @@ func (h *HomeLogic) GetData(name string) (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	//log.Println("user: ", user)
+	// log.Println("user: ", user)
 
 	return map[string]interface{}{
 		"user": user,
 	}, nil
+}
+
+// AsyncDoTaskByCtx 通过ctx控制执行任务
+func (h *HomeLogic) AsyncDoTaskByCtx(ctx context.Context, id int) {
+	done := make(chan struct{}, 1)
+	go func() {
+		name := ctx.Value("name")
+		log.Printf("name:%s\n", name)
+		for i := 0; i < id; i++ {
+			log.Println("current index: ", i)
+		}
+
+		time.Sleep(3 * time.Second) // 模拟超时
+		log.Println(1111111)
+		close(done)
+	}()
+
+	select {
+	case <-ctx.Done(): // ctx超时时间
+		log.Println("ctx timeout,error: ", ctx.Err())
+	case <-done: // 业务内部指定的一个超时时间
+		log.Println("success")
+	}
 }
