@@ -15,7 +15,7 @@ func main() {
 
 	s := &httpRequest.Service{
 		BaseUri: "",
-		Timeout: 2 * time.Second, // 客户端2s超时，当没有指定超时，就会一直等
+		Timeout: 10 * time.Second, // 客户端超时，当没有指定超时，就会一直等
 	}
 
 	opt := &httpRequest.RequestOption{
@@ -29,7 +29,7 @@ func main() {
 	log.Println("http status: ", res.StatusCode)
 	log.Println("body:", res.Text())
 
-	nums := 1000
+	nums := 10000
 	// 每秒100个进行请求
 	var wg sync.WaitGroup
 	wg.Add(nums)

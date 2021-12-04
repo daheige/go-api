@@ -104,14 +104,42 @@ func (ctrl *HomeController) PostData(c *gin.Context) {
 	data, err := homeLogic.GetData(name)
 	log.Println("err: ", err)
 
-	// 这种没有超时的ctx会导致客户端一直等待
+	// 方式1：这种没有超时的ctx会导致客户端一直等待
 	// ctx = context.WithValue(context.Background(), "name", "daheige")
 
-	// 设置超时的上下文ctx,一般建议设置具有生命周期的上下文
+	// 方式2：设置超时的上下文ctx,一般建议设置具有生命周期的上下文
+	// ctx = context.WithValue(ctx, "name", "daheige")
+	// ctx, cancel := context.WithTimeout(ctx, 50*time.Millisecond)
+	// defer cancel()
+	// homeLogic.AsyncDoTaskByCtx(ctx, 100) //  ctx timeout,error:  context deadline exceeded
+
+	// 方式3：http.Request.Context()作为ctx,但是当这个request的客户端断开后，这个ctx就会自动取消
+	// 来自http.Request包
+	// Context returns the request's context. To change the context, use
+	// WithContext.
+	//
+	// The returned context is always non-nil; it defaults to the
+	// background context.
+	//
+	// For outgoing client requests, the context controls cancellation.
+	//
+	// For incoming server requests, the context is canceled when the
+	// client's connection closes, the request is canceled (with HTTP/2),
+	// or when the ServeHTTP method returns.
+	// homeLogic.AsyncDoTaskByCtx(ctx, 100)
+
+	// 方式4：基于ctx创建一个新的ctx
+	// ctx1 := context.WithValue(context.Background(), "name", "daheige")
+	// ctx1, cancel := context.WithTimeout(ctx1, 3*time.Second)
+	// defer cancel()
+	// homeLogic.AsyncDoTaskByCtx(ctx, 100)
+
+	// 方式5: 在AsyncDoTaskByCtx内部基于ctx创建一个新的ctx
+	// wrap the request context with a timeout
 	ctx = context.WithValue(ctx, "name", "daheige")
-	ctx, cancel := context.WithTimeout(ctx, 50*time.Millisecond)
-	defer cancel()
-	homeLogic.AsyncDoTaskByCtx(ctx, 100) //  ctx timeout,error:  context deadline exceeded
+	homeLogic.AsyncDoTaskByCtx(ctx, 100)
+
+	// 一般推荐方式4，5模式来做一些异步操作
 
 	c.JSON(HttpSuccessCode, gin.H{
 		"code":    0,

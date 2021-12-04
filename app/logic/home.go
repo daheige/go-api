@@ -44,23 +44,31 @@ func (h *HomeLogic) GetData(name string) (map[string]interface{}, error) {
 
 // AsyncDoTaskByCtx 通过ctx控制执行任务
 func (h *HomeLogic) AsyncDoTaskByCtx(ctx context.Context, id int) {
+	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+
 	done := make(chan struct{}, 1)
 	go func() {
 		name := ctx.Value("name")
-		log.Printf("name:%s\n", name)
+		log.Printf("name:%v\n", name)
 		for i := 0; i < id; i++ {
 			log.Println("current index: ", i)
 		}
 
-		time.Sleep(3 * time.Second) // 模拟超时
+		time.Sleep(1 * time.Second) // 模拟超时
 		log.Println(1111111)
 		close(done)
 	}()
 
 	select {
-	case <-ctx.Done(): // ctx超时时间
-		log.Println("ctx timeout,error: ", ctx.Err())
-	case <-done: // 业务内部指定的一个超时时间
+	case <-ctx.Done(): // ctx超时控制
+		if ctx.Err() == context.DeadlineExceeded {
+			cancel()
+			log.Println("ctx timeout,error: ", ctx.Err())
+		}
+	case <-done:
 		log.Println("success")
+		// case <-time.After(3 * time.Second): // 业务内部指定的一个超时时间
+		// 	log.Println("server timeout")
 	}
+
 }

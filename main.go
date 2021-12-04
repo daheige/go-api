@@ -108,8 +108,8 @@ func main() {
 		Handler: router,
 		Addr:    fmt.Sprintf("0.0.0.0:%d", port),
 		// Good practice to set timeouts to avoid Slowloris attacks.
-		ReadTimeout:    15 * time.Second,
-		WriteTimeout:   15 * time.Second,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
 		IdleTimeout:    60 * time.Second,
 		MaxHeaderBytes: 2 << 20, // header max 2MB
 	}
