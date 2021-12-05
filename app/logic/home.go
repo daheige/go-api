@@ -46,6 +46,7 @@ func (h *HomeLogic) GetData(name string) (map[string]interface{}, error) {
 func (h *HomeLogic) AsyncDoTaskByCtx(ctx context.Context, id int) {
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 
+	exit := make(chan struct{}, 1)
 	done := make(chan struct{}, 1)
 	go func() {
 		name := ctx.Value("name")
@@ -54,7 +55,15 @@ func (h *HomeLogic) AsyncDoTaskByCtx(ctx context.Context, id int) {
 			log.Println("current index: ", i)
 		}
 
-		time.Sleep(1 * time.Second) // 模拟超时
+		time.Sleep(3 * time.Second) // 模拟超时
+		// 通知goroutine已经退出，阻止下面的逻辑继续运行
+		select {
+		case <-exit:
+			log.Println("ctx name: ", ctx.Value("name")) // 当上下文被取消后，Value是可以拿到ctx数据
+			return
+		default:
+		}
+
 		log.Println(1111111)
 		close(done)
 	}()
@@ -65,6 +74,8 @@ func (h *HomeLogic) AsyncDoTaskByCtx(ctx context.Context, id int) {
 			cancel()
 			log.Println("ctx timeout,error: ", ctx.Err())
 		}
+
+		close(exit)
 	case <-done:
 		log.Println("success")
 		// case <-time.After(3 * time.Second): // 业务内部指定的一个超时时间

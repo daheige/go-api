@@ -29,7 +29,7 @@ func main() {
 	log.Println("http status: ", res.StatusCode)
 	log.Println("body:", res.Text())
 
-	nums := 10000
+	nums := 1
 	// 每秒100个进行请求
 	var wg sync.WaitGroup
 	wg.Add(nums)
